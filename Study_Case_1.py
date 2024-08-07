@@ -7,6 +7,7 @@ class Dice():
         The currently available properties of this class include:
          - num_sides = Defines the amount of sides the dice has
          - modifier = Sets an additive modifier to the dice's roll
+         - scalar = Sets a multiplicative modifier to the dice's roll
         
         The currently available properties of this class include:
          - Single Dice Roll
@@ -16,6 +17,7 @@ class Dice():
 
         self.num_sides = 0
         self.modifier = 0
+        self.scalar = 1
     
     def set_num_sides(self, num: int):
         " Builder Pattern of self.num_sides "
@@ -34,14 +36,19 @@ class Dice():
         self.modifier = num
         return self
     
-    def roll(self):
-        "Single dice roll. Returns a single number"
-        return randint(1, self.num_sides) + self.modifier
+    def set_scalar(self, num:int):
+        if type(num) != type(1):
+            raise TypeError("dice num_sides must be a strictly positive integer")
+        if num < 1:
+            raise TypeError("dice num_sides must be a strictly positive integer")
+        
+        self.scalar = num
+        return self
     
     @staticmethod
     def roll(dice):
-        "Alternate single dice roll. Returns a single number"
-        return randint(1, dice.num_sides) + dice.modifier
+        "Single dice roll. Returns a single number"
+        return (randint(1, dice.num_sides) + dice.modifier) * dice.scalar
     
     @classmethod
     def sum_roll(cls, die: list):
