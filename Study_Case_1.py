@@ -21,7 +21,7 @@ class Dice():
     
     def set_num_sides(self, num: int):
         " Builder Pattern for num_sides "
-        if type(num) != type(1):
+        if type(num) != type(1):  # Error Handling
             raise TypeError("dice num_sides must be a strictly positive integer")
         if num < 1:
             raise TypeError("dice num_sides must be a strictly positive integer")
@@ -31,14 +31,15 @@ class Dice():
     
     def set_modifier(self, num: int):
         "Builder Pattern for modifier"
-        if type(num) != type(1):
+        if type(num) != type(1):  # Error Handling
             raise TypeError("dice num_sides must be an integer")
+        
         self.modifier = num
         return self
     
     def set_scalar(self, num:int):
         "Builder Pattern for scalar"
-        if type(num) != type(1):
+        if type(num) != type(1):  # Error Handling
             raise TypeError("dice num_sides must be a strictly positive integer")
         if num < 1:
             raise TypeError("dice num_sides must be a strictly positive integer")
