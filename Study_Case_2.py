@@ -119,9 +119,18 @@ class Game_Master():
                 raise TypeError('Entity list contains non-entity elements')
             
             battle_stats = entity.battle_stats()
-            self.active_entities[battle_stats[0]] = (battle_stats[1])
+            self.active_entities[battle_stats[0]] = [battle_stats[1]]
         
         return self
+    
+    def delta_HP(self, entity, value):
+        "Facade for altering HP value. Adds given value to an active entity"
+
+        if entity not in self.active_entities.keys():  # Error Handling
+            raise TypeError('Given object doesn\'t allign with active entities')
+
+        self.active_entities[entity][0] += value
+
 
     @classmethod
     def clash_stats(cls, entity_1: Entity, stat_1:str, entity_2:Entity, stat_2:str):
@@ -135,10 +144,6 @@ class Game_Master():
         if roll_1 > roll_2:
             return (0, roll_1)
         return (1, roll_2)
-
-    @classmethod
-    def delta_HP(cls, entity, damage):
-        pass
         
 
 dave = Entity().set_attribute('Vit', 3156)
@@ -147,3 +152,5 @@ joe = Entity().set_attribute('Str', 2865)
 game = Game_Master().add_entities([dave, joe])
 
 print(game.clash_stats(dave, 'Vit', joe, 'Str'))
+game.delta_HP(dave, -50)
+print(game.active_entities[dave])

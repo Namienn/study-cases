@@ -86,7 +86,7 @@ class Dice():
         # Loop steps 1-4 until max list value is measured at -1
         # - - -
         # due to the implementation of the loop, it adds an extra unnecessary element
-        # at the end of each return list, that's why it's chopped at the last value.
+        # at the end of each return list. that's why it's chopped at the last value.
 
         win_order = []
         win_values = []
