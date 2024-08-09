@@ -17,31 +17,9 @@ class Entity():
          - battle_stats: returns a tuple with the entity's conflict stats
          """
         self.name = ''
-        self.attr_values = {
-            'STR': 1,
-            'DEX': 1,
-            'VIT': 1,
-            'PER': 1,
-            'INT': 1,
-            'CHA': 1,
-            'LCK': 1,
-            'WIS': 1,
-            'ARC': 1,
-            'PAT': 1
-        }
-        self.attr_die = {
-            'STR': None,
-            'DEX': None,
-            'VIT': None,
-            'PER': None,
-            'INT': None,
-            'CHA': None,
-            'LCK': None,
-            'WIS': None,
-            'ARC': None,
-            'PAT': None
-        }
-    
+        self.attr_values = globals.build_attr_values_dict()
+        self.attr_die = globals.build_attr_dice_dict()
+
     def set_attribute(self, attribute: str, value: int):
         """Builder pattern for attr_values.
         
