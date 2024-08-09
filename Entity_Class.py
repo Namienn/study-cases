@@ -18,7 +18,7 @@ class Entity():
          """
         self.name = ''
         self.attr_values = gl.build_attr_values_dict()
-        self.attr_die = gl.build_attr_dice_dict()
+        self.attr_dice = gl.build_attr_dice_dict()
 
     def set_attribute(self, attribute: str, value: int):
         """Builder pattern for attr_values.
@@ -56,13 +56,13 @@ class Entity():
     
     @classmethod
     def roll_stat(cls, char, attribute: str, scale: int = 0.1):
-        "Rolls a given stat for a given character, according to it's corresponding dice (defaults to d20)."
+        "Rolls a given stat for a given character, according to it's corresponding die (defaults to d20)."
         if attribute.upper() not in gl.attributes:  # Error Handling
             raise ValueError('Invalid Attribute')
         
-        dice = char.attr_die[attribute.upper()]  # upper() method drops the case-sensitiveness
-        if dice is None:
-            dice = sc_i.Dice().set_num_sides(20)
+        die = char.attr_dice[attribute.upper()]  # upper() method drops the case-sensitiveness
+        if die is None:
+            die = sc_i.Die().set_num_sides(20)
         
-        modifier = sc_i.Dice.roll(dice) * scale
+        modifier = sc_i.Die.roll(die) * scale
         return char.attr_values[attribute.upper()] * (modifier+0.4)

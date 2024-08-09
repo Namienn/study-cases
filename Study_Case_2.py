@@ -50,7 +50,15 @@ class Game_Master():
     
     @classmethod 
     def roll_damage(cls, entity: Entity, weapon:sc_iii.Weapon):
-        return sc_iii.Weapon.atk_roll(weapon)
+        if type(entity) is not Entity:
+            raise TypeError('entity parameter must be Entity object')
+        if type(weapon) is not sc_iii.Weapon:
+            raise TypeError('weapon parameter must be Weapon object')
+        
+        base_roll = sc_iii.Weapon.atk_roll(weapon)
+        return base_roll
+
+
 
 
 if __name__ == "__main__":
@@ -65,5 +73,5 @@ if __name__ == "__main__":
     game.delta_HP(dave, -50)
     print(game.active_entities[dave])
 
-    stick = sc_iii.Weapon().set_dmg_dice(sc_i.Dice().set_num_sides(4))
+    stick = sc_iii.Weapon().set_dmg_die(sc_i.Die().set_num_sides(4))
     print(game.roll_damage(dave, stick))
