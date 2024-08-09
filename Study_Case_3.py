@@ -1,6 +1,5 @@
 import Study_Case_1 as sc_i
-import Study_Case_2 as sc_ii
-import Global_Elements as globals
+import Global_Elements as gl
 
 class Weapon():
     def __init__(self) -> None:
@@ -11,7 +10,7 @@ class Weapon():
         for arg in args:
             if type(arg) is not str:  # Error Handling
                 raise TypeError('Parameters must be strings separated by commas')
-            if arg.upper() not in globals.attributes:
+            if arg.upper() not in gl.attributes:
                 raise ValueError('Weapon parameters must be valid Entity attributes')
         
         self.use_attr = args
@@ -23,11 +22,15 @@ class Weapon():
         
         self.dmg_dice = dice
         return self
+    
+    @classmethod
+    def atk_roll(cls, weapon):
+        return sc_i.Dice.roll(weapon.dmg_dice)
 
+if __name__ == "__main__":
+    stick = Weapon().set_use_attr('Str', 'Vit')
 
-stick = Weapon().set_use_attr('Str', 'Vit')
+    d4 = sc_i.Dice().set_num_sides(4)
+    stick.set_dmg_dice(d4)
 
-d4 = sc_i.Dice().set_num_sides(4)
-stick.set_dmg_dice(d4)
-
-print(stick.dmg_dice)
+    print(stick.dmg_dice)
