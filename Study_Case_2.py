@@ -1,8 +1,8 @@
 import Study_Case_1 as sc_i
+import Global_Elements as globals
 from math import log10
 
 class Entity():
-    attributes = ('STR', 'DEX', 'VIT', 'PER', 'INT', 'CHA', 'LCK', 'WIS', 'ARC', 'PAT')  # Attribute names (for accessibility purposes)
     
     def __init__(self) -> None:
         """A collection of the fundamental parts for any entity.
@@ -58,7 +58,7 @@ class Entity():
          - PAT: Patience
          """
         
-        if attribute.upper() not in self.attributes:  # Error Handling
+        if attribute.upper() not in globals.attributes:  # Error Handling
             raise ValueError('Invalid Attribute')
         if type(value) != int or value < 0:
             raise TypeError('Attribute must be a non-negative integer')
@@ -89,7 +89,7 @@ class Entity():
     @classmethod
     def roll_stat(cls, char, attribute: str, scale: int = 0.1):
         "Rolls a given stat for a given character, according to it's corresponding dice (defaults to d20)."
-        if attribute.upper() not in cls.attributes:  # Error Handling
+        if attribute.upper() not in globals.attributes:  # Error Handling
             raise ValueError('Invalid Attribute')
         
         dice = char.attr_die[attribute.upper()]  # upper() method drops the case-sensitiveness
@@ -144,13 +144,14 @@ class Game_Master():
         if roll_1 > roll_2:
             return (0, roll_1)
         return (1, roll_2)
-        
 
-dave = Entity().set_attribute('Vit', 3156)
-joe = Entity().set_attribute('Str', 2865)
 
-game = Game_Master().add_entities([dave, joe])
+if __name__ == "__main__":
+    dave = Entity().set_attribute('Vit', 3156)
+    joe = Entity().set_attribute('Str', 2865)
 
-print(game.clash_stats(dave, 'Vit', joe, 'Str'))
-game.delta_HP(dave, -50)
-print(game.active_entities[dave])
+    game = Game_Master().add_entities([dave, joe])
+
+    print(game.clash_stats(dave, 'Vit', joe, 'Str'))
+    game.delta_HP(dave, -50)
+    print(game.active_entities[dave])
