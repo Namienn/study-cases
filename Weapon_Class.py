@@ -1,4 +1,4 @@
-import Study_Case_1 as sc_i
+import Die_Class as sc_i
 import Global_Elements as gl
 
 class Weapon():

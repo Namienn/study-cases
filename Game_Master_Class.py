@@ -1,5 +1,5 @@
 from Entity_Class import Entity
-import Study_Case_3 as sc_iii
+import Weapon_Class as sc_iii
 import Global_Elements as gl
     
 
@@ -62,7 +62,7 @@ class Game_Master():
 
 
 if __name__ == "__main__":
-    import Study_Case_1 as sc_i
+    import Die_Class as sc_i
 
     dave = Entity().set_attribute('Vit', 3156)
     joe = Entity().set_attribute('Str', 2865)
