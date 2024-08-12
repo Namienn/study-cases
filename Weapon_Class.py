@@ -1,4 +1,4 @@
-import Die_Class as sc_i
+from Die_Class import Die
 import Global_Elements as gl
 
 class Weapon():
@@ -40,10 +40,10 @@ class Weapon():
         self.attr_req = args
         return self
     
-    def set_dmg_dice(self, *args: sc_i.Die):
+    def set_dmg_dice(self, *args: Die):
         "Builder pattern for damage die"
         for arg in args:
-            if type(arg) is not sc_i.Die:  # Error Handling
+            if type(arg) is not Die:  # Error Handling
                 raise TypeError('Parameters must be die objects.')
         
         self.dmg_dice = args
@@ -54,13 +54,13 @@ class Weapon():
         "Method for rolling attack dice."
         result = 0
         for die in weapon.dmg_dice:
-            result += sc_i.Die.roll(die)
+            result += Die.roll(die)
         return result
 
 if __name__ == "__main__":
     stick = Weapon().set_use_attr('Str', 'Vit')
 
-    d4 = sc_i.Die().set_num_sides(4)
+    d4 = Die().set_num_sides(4)
     stick.set_dmg_dice(d4, d4, d4, d4)
     
     print(Weapon.atk_roll(stick))

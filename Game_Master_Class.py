@@ -1,5 +1,4 @@
 from Entity_Class import Entity
-import Weapon_Class as sc_iii
 import Global_Elements as gl
     
 
@@ -47,22 +46,11 @@ class Game_Master():
         if roll_1 > roll_2:
             return (0, roll_1)
         return (1, roll_2)
-    
-    @classmethod 
-    def roll_damage(cls, entity: Entity, weapon:sc_iii.Weapon):
-        if type(entity) is not Entity:
-            raise TypeError('entity parameter must be Entity object')
-        if type(weapon) is not sc_iii.Weapon:
-            raise TypeError('weapon parameter must be Weapon object')
-        
-        base_roll = sc_iii.Weapon.atk_roll(weapon)
-        return base_roll
-
-
 
 
 if __name__ == "__main__":
-    import Die_Class as sc_i
+    from Die_Class import Die
+    from Weapon_Class import Weapon
 
     dave = Entity().set_attribute('Vit', 3156)
     joe = Entity().set_attribute('Str', 2865)
@@ -73,5 +61,6 @@ if __name__ == "__main__":
     game.delta_HP(dave, -50)
     print(game.active_entities[dave])
 
-    stick = sc_iii.Weapon().set_dmg_die(sc_i.Die().set_num_sides(4))
-    print(game.roll_damage(dave, stick))
+    stick = Weapon().set_dmg_dice(Die().set_num_sides(20), Die().set_num_sides(20), Die().set_num_sides(20))
+    stick.set_use_attr('Str').set_attr_req(3000)
+    print(Entity.roll_damage(joe, stick))

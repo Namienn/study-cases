@@ -1,4 +1,5 @@
-import Die_Class as sc_i
+from Die_Class import Die
+from Weapon_Class import Weapon
 import Global_Elements as gl
 from math import log10
 
@@ -10,13 +11,14 @@ class Entity():
         Current properties (and build patterns) include:
          - name
          - attr_values
-         - attr_die
+         - attr_dice
          
          Current methods include:
          - roll_stat: rolls for stat and handles the math, returning the power level
          - battle_stats: returns a tuple with the entity's conflict stats
          """
         self.name = ''
+
         self.attr_values = gl.build_attr_values_dict()
         self.attr_dice = gl.build_attr_dice_dict()
 
@@ -62,7 +64,27 @@ class Entity():
         
         die = char.attr_dice[attribute.upper()]  # upper() method drops the case-sensitiveness
         if die is None:
-            die = sc_i.Die().set_num_sides(20)
+            die = Die().set_num_sides(20)
         
-        modifier = sc_i.Die.roll(die) * scale
+        modifier = Die.roll(die) * scale
         return char.attr_values[attribute.upper()] * (modifier+0.4)
+    
+    @classmethod 
+    def roll_damage(cls, entity, weapon:Weapon):
+        if type(entity) is not Entity:  # Error Handling
+            raise TypeError('entity parameter must be Entity object')
+        if type(weapon) is not Weapon:
+            raise TypeError('weapon parameter must be Weapon object')
+        
+        base_roll = Weapon.atk_roll(weapon)
+        for c, stat in enumerate(weapon.use_attr):
+            given_stat = entity.attr_values[stat.upper()]
+
+            multiplier = given_stat/weapon.attr_req[c]
+            if multiplier < 0.5:
+                return 0
+            if multiplier > 1.5:
+                multiplier = 1.5
+            base_roll *= multiplier
+
+        return int(base_roll)
