@@ -1,18 +1,18 @@
 from random import randint
 
-class Dice():
+class Die():
     def __init__(self) -> None:
-        """The Ultimate Abstraction of Dice
+        """The Ultimate Abstraction of Die
 
         The currently available properties of this class include:
-         - num_sides = Defines the amount of sides the dice has
-         - modifier = Sets an additive modifier to the dice's roll
-         - scalar = Sets a multiplicative modifier to the dice's roll
+         - num_sides = Defines the amount of sides the die has
+         - modifier = Sets an additive modifier to the die's roll
+         - scalar = Sets a multiplicative modifier to the die's roll
         
         The currently available properties of this class include:
-         - Single Dice Roll
-         - Additive Multiple Die Roll
-         - Clashing Multiple Die Roll
+         - Single Die Roll
+         - Additive Multiple Dice Roll
+         - Clashing Multiple Dice Roll
         """
 
         self.num_sides = 0
@@ -22,9 +22,9 @@ class Dice():
     def set_num_sides(self, num: int):
         " Builder Pattern for num_sides "
         if type(num) != type(1):  # Error Handling
-            raise TypeError("dice num_sides must be a strictly positive integer")
+            raise TypeError("die num_sides must be a strictly positive integer")
         if num < 1:
-            raise TypeError("dice num_sides must be a strictly positive integer")
+            raise TypeError("die num_sides must be a strictly positive integer")
         
         self.num_sides = num
         return self
@@ -32,7 +32,7 @@ class Dice():
     def set_modifier(self, num: int):
         "Builder Pattern for modifier"
         if type(num) != type(1):  # Error Handling
-            raise TypeError("dice num_sides must be an integer")
+            raise TypeError("die num_sides must be an integer")
         
         self.modifier = num
         return self
@@ -40,41 +40,41 @@ class Dice():
     def set_scalar(self, num:int):
         "Builder Pattern for scalar"
         if type(num) != type(1):  # Error Handling
-            raise TypeError("dice num_sides must be a strictly positive integer")
+            raise TypeError("die num_sides must be a strictly positive integer")
         if num < 1:
-            raise TypeError("dice num_sides must be a strictly positive integer")
+            raise TypeError("die num_sides must be a strictly positive integer")
         
         self.scalar = num
         return self
     
     @staticmethod
-    def roll(dice):
-        "Single dice roll. Returns a single number"
-        return (randint(1, dice.num_sides) + dice.modifier) * dice.scalar
+    def roll(die):
+        "Single die roll. Returns a single number"
+        return (randint(1, die.num_sides) + die.modifier) * die.scalar
     
     @classmethod
-    def sum_roll(cls, die: list):
+    def sum_roll(cls, dice: list):
         "Additive multiple die roll. Returns a single number, sum of all rolled die"
         final_sum = 0
-        for dice in die:
-            if type(dice) != cls:
-                raise TypeError('Dice list given includes non-dice elements')
+        for die in dice:
+            if type(die) != cls:
+                raise TypeError('Dice list given includes non-die elements')
             
-            final_sum += cls.roll(dice)
+            final_sum += cls.roll(die)
 
         return final_sum
     
     @classmethod
-    def clash_roll(cls, die: list):
-        """Clashing multiple die roll. 
+    def clash_roll(cls, dice: list):
+        """Clashing multiple dice roll. 
         Returns a list with the die indexes ordered from highest to lowest, each in a sublist.
         In case of a tie, the indexes share the same sublist."""
         rolls = []
-        for dice in die:
-            if type(dice) != cls:
-                raise TypeError('Dice list given includes non-dice elements')
+        for die in dice:
+            if type(die) != cls:
+                raise TypeError('Dice list given includes non-die elements')
             
-            rolls.append(cls.roll(dice))
+            rolls.append(cls.roll(die))
         
         # Sorting Method:
         # Step 1: Find max value and it's index
