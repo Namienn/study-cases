@@ -36,7 +36,11 @@ class Game_Master():
 
     @classmethod
     def clash_stats(cls, entity_1: Entity, stat_1:str, entity_2:Entity, stat_2:str):
-        "Stat conflict settler. calls for stat rolls, returning the index of the winner and the roll result."
+        """Class method for stat conflict settling. 
+        
+        Receives two sets of Entity, str.
+        
+        Returns the index of the winner and the roll result."""
         if type(entity_1) is not Entity or type(entity_2) is not Entity:  # Error Handling
             raise TypeError('Non-entity element passed as entity')
 

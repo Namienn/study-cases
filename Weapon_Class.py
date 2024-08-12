@@ -51,11 +51,16 @@ class Weapon():
     
     @classmethod
     def atk_roll(cls, weapon):
-        "Method for rolling attack dice."
+        """Class method for rolling attack dice.
+        
+        Receives a Weapon object.
+        
+        Returns a single number."""
         result = 0
         for die in weapon.dmg_dice:
             result += Die.roll(die)
         return result
+
 
 if __name__ == "__main__":
     stick = Weapon().set_use_attr('Str', 'Vit')

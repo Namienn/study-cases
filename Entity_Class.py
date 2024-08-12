@@ -57,20 +57,30 @@ class Entity():
 
     
     @classmethod
-    def roll_stat(cls, char, attribute: str, scale: int = 0.1):
-        "Rolls a given stat for a given character, according to it's corresponding die (defaults to d20)."
+    def roll_stat(cls, entity, attribute: str, scale: int = 0.1):
+        """Class method for rolling a given stat for a given entity,
+        according to it's corresponding die (defaults to d20).
+        
+        Receives an Entity object, a str and an int.
+        
+        Returns a single number"""
         if attribute.upper() not in gl.attributes:  # Error Handling
             raise ValueError('Invalid Attribute')
         
-        die = char.attr_dice[attribute.upper()]  # upper() method drops the case-sensitiveness
+        die = entity.attr_dice[attribute.upper()]  # upper() method drops the case-sensitiveness
         if die is None:
             die = Die().set_num_sides(20)
         
         modifier = Die.roll(die) * scale
-        return char.attr_values[attribute.upper()] * (modifier+0.4)
+        return entity.attr_values[attribute.upper()] * (modifier+0.4)
     
     @classmethod 
     def roll_damage(cls, entity, weapon:Weapon):
+        """Handles the math behind rolling for damage.
+        
+        Receives an Entity and a Weapon objects.
+        
+        Returns a single number."""
         if type(entity) is not Entity:  # Error Handling
             raise TypeError('entity parameter must be Entity object')
         if type(weapon) is not Weapon:

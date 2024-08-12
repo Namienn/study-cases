@@ -49,12 +49,22 @@ class Die():
     
     @staticmethod
     def roll(die):
-        "Single die roll. Returns a single number"
+        """Class method for single die roll.
+        
+        Receives a Die
+
+        Returns a single number.
+        """
         return (randint(1, die.num_sides) + die.modifier) * die.scalar
     
     @classmethod
     def sum_roll(cls, dice: list):
-        "Additive multiple die roll. Returns a single number, sum of all rolled die"
+        """Class method for additive multiple dice roll.
+        
+        Receives a list of dice to roll
+
+        Returns a single number, sum of all rolled die
+        """
         final_sum = 0
         for die in dice:
             if type(die) != cls:
@@ -66,7 +76,10 @@ class Die():
     
     @classmethod
     def clash_roll(cls, dice: list):
-        """Clashing multiple dice roll. 
+        """Class method for clashing multiple dice roll.
+
+        Receives a list of dice.
+
         Returns a list with the die indexes ordered from highest to lowest, each in a sublist.
         In case of a tie, the indexes share the same sublist."""
         rolls = []
