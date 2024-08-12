@@ -1,5 +1,5 @@
 from Die_Class import Die
-import Global_Elements as gl
+import Global_Config as gl
 
 class Weapon():
     def __init__(self) -> None:

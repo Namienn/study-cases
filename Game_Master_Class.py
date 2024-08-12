@@ -1,5 +1,5 @@
 from Entity_Class import Entity
-import Global_Elements as gl
+import Global_Config as gl
     
 
 class Game_Master():

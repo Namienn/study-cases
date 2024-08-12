@@ -1,6 +1,6 @@
 from Die_Class import Die
 from Weapon_Class import Weapon
-import Global_Elements as gl
+import Global_Config as gl
 from math import log10
 
 class Entity():
