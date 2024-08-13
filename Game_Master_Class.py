@@ -68,3 +68,5 @@ if __name__ == "__main__":
     stick = Weapon().set_dmg_dice(Die().set_num_sides(20), Die().set_num_sides(20), Die().set_num_sides(20))
     stick.set_use_attr('Str').set_attr_req(3000)
     print(Entity.roll_damage(joe, stick))
+
+    print(dave.damage_type_modifiers)

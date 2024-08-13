@@ -22,6 +22,9 @@ class Entity():
         self.attr_values = gl.build_attr_values_dict()
         self.attr_dice = gl.build_attr_dice_dict()
 
+        self.element_modifiers = gl.build_element_modifier_dict()
+        self.damage_type_modifiers = gl.build_dmg_type_modifier_dict()
+
     def set_attribute(self, attribute: str, value: int):
         """Builder pattern for attr_values.
         
