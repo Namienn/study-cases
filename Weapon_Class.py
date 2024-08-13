@@ -1,5 +1,5 @@
 from Die_Class import Die
-import Global_Elements as gl
+import Global_Config as gl
 
 class Weapon():
     def __init__(self) -> None:
@@ -15,7 +15,10 @@ class Weapon():
         """
         self.use_attr = None
         self.attr_req = None
+
         self.dmg_dice = []
+
+        self.dmg_type = None
     
     def set_use_attr(self, *args: str):
         "Builder pattern for weapon attributes"
@@ -49,6 +52,16 @@ class Weapon():
         self.dmg_dice = args
         return self
     
+    def set_dmg_type(self, typ: str):
+        "Builder pattern for damage type"
+        if type(typ) is not str:  # Error Handling
+            raise TypeError('Parameter must be a str')
+        if typ.upper() not in gl.damage_types:
+            raise ValueError('Parameter must be valid damage type')
+        
+        self.dmg_type = typ
+        return self
+
     @classmethod
     def atk_roll(cls, weapon):
         """Class method for rolling attack dice.
