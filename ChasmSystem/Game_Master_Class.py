@@ -2,7 +2,7 @@ from Entity_Class import Entity, BattleEntity
 import Global_Config as gl
     
 
-class Game_Master():
+class GameMaster():
     def __init__(self) -> None:
         """The mediator between entities within a conflict
         
@@ -49,7 +49,7 @@ if __name__ == '__main__':
         .set_attr_req(100, 100) \
         .set_dmg_dice(d4, d4, d4)
 
-    game = Game_Master().add_entities(dave)
+    game = GameMaster().add_entities(dave)
     
     print(game.active_entities['dave'].hp, end=' ')
     game.start_engagement()
