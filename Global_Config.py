@@ -62,7 +62,7 @@ def build_attr_modifier_dict() -> dict:
 
 def check_for_type(element: any, type_check: any, message: str = 'Parameter type invalid') -> None:
     if type(element) is not type_check:
-        raise TypeError(message)
+        raise TypeError(message + f' - {type(element)} != {type_check}')
 
 def check_for_attribute(element: str, message: str = 'Parameter is not a valid attribute') -> None:
     check_for_type(element, str)
@@ -78,3 +78,4 @@ def check_for_dmg_type(element: str, message: str = 'Parameter is not a valid da
     check_for_type(element, str)
     if element.upper() not in damage_types:
         raise ValueError(message)
+    
