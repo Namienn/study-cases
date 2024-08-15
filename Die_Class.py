@@ -1,4 +1,5 @@
 from random import randint
+import Global_Config as gl
 
 class Die():
     def __init__(self) -> None:
@@ -21,8 +22,8 @@ class Die():
     
     def set_num_sides(self, num: int):
         " Builder Pattern for num_sides "
-        if type(num) != type(1):  # Error Handling
-            raise TypeError("die num_sides must be a strictly positive integer")
+        
+        gl.check_for_type(num, int)  # Error Handling
         if num < 1:
             raise TypeError("die num_sides must be a strictly positive integer")
         
@@ -31,61 +32,50 @@ class Die():
     
     def set_modifier(self, num: int):
         "Builder Pattern for modifier"
-        if type(num) != type(1):  # Error Handling
-            raise TypeError("die num_sides must be an integer")
+        
+        gl.check_for_type(num, int)  # Error Handling
         
         self.modifier = num
         return self
     
     def set_scalar(self, num:int):
         "Builder Pattern for scalar"
-        if type(num) != type(1):  # Error Handling
-            raise TypeError("die num_sides must be a strictly positive integer")
+        
+        gl.check_for_type(num, int)  # Error Handling
         if num < 1:
-            raise TypeError("die num_sides must be a strictly positive integer")
+            raise TypeError("die scalar must be a strictly positive integer")
         
         self.scalar = num
         return self
     
     @staticmethod
-    def roll(die):
-        """Class method for single die roll.
-        
-        Receives a Die
+    def roll(die) -> int:
+        "Class method for single die roll."
 
-        Returns a single number.
-        """
-        return (randint(1, die.num_sides) + die.modifier) * die.scalar
+        return randint(1, die.num_sides) * die.scalar + die.modifier
     
     @classmethod
-    def sum_roll(cls, dice: list):
-        """Class method for additive multiple dice roll.
+    def sum_roll(cls, *dice) -> int:
+        "Class method for additive multiple dice roll."
         
-        Receives a list of dice to roll
-
-        Returns a single number, sum of all rolled die
-        """
         final_sum = 0
         for die in dice:
-            if type(die) != cls:
-                raise TypeError('Dice list given includes non-die elements')
+            gl.check_for_type(die, Die, 'Dice list includes non-die elements')  # Error Handling
             
             final_sum += cls.roll(die)
 
         return final_sum
     
     @classmethod
-    def clash_roll(cls, dice: list):
+    def clash_roll(cls, *dice) -> list[list]:
         """Class method for clashing multiple dice roll.
-
-        Receives a list of dice.
 
         Returns a list with the die indexes ordered from highest to lowest, each in a sublist.
         In case of a tie, the indexes share the same sublist."""
+
         rolls = []
         for die in dice:
-            if type(die) != cls:
-                raise TypeError('Dice list given includes non-die elements')
+            gl.check_for_type(die, Die, 'Dice list includes non-die elements')  # Error Handling
             
             rolls.append(cls.roll(die))
         
@@ -118,7 +108,3 @@ class Die():
             rolls[max_index] = -1  # Step 4
         
         return win_order[:-1], win_values[:-1]
-
-
-if __name__ == "__main__":
-    pass

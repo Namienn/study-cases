@@ -1,4 +1,4 @@
-from Entity_Class import Entity
+from Entity_Class import Entity, BattleEntity
 import Global_Config as gl
     
 
@@ -10,63 +10,49 @@ class Game_Master():
         - active_entities
         
         Current methods include:
-        - clash_stats: settles a conflict between two attributes of two entities
+        - start_engagement(self) - Method for initializing entities for conflict
         """
-        self.active_entities = {}
 
-    def add_entities(self, ent_list: tuple):
+        self.active_entities: dict[str, BattleEntity] = {}
+
+    def add_entities(self, *args: Entity):
         "Builder pattern for active_entities"
-        for entity in ent_list:
-            if type(entity) is not Entity:  # Error Handling
-                raise TypeError('Entity list contains non-entity elements')
+        
+        for arg in args:
+            gl.check_for_type(arg, Entity)  # Error Handling
             
-            battle_stats = entity.battle_stats()
-            self.active_entities[battle_stats[0]] = [battle_stats[1]]
+            b_entity = BattleEntity.from_entity(arg)
+            self.active_entities[arg.id_name] = b_entity
         
         return self
     
-    def delta_HP(self, entity, value):
-        "Facade for altering HP value. Adds given value to an active entity"
-
-        if entity not in self.active_entities.keys():  # Error Handling
-            raise TypeError('Given object doesn\'t allign with active entities')
-
-        self.active_entities[entity][0] += value
+    def start_engagement(self) -> None:
+        for ent in self.active_entities.values():
+            BattleEntity.start_up(ent)
 
 
-    @classmethod
-    def clash_stats(cls, entity_1: Entity, stat_1:str, entity_2:Entity, stat_2:str):
-        """Class method for stat conflict settling. 
-        
-        Receives two sets of Entity, str.
-        
-        Returns the index of the winner and the roll result."""
-        if type(entity_1) is not Entity or type(entity_2) is not Entity:  # Error Handling
-            raise TypeError('Non-entity element passed as entity')
-
-        roll_1 = Entity.roll_stat(entity_1, stat_1)
-        roll_2 = Entity.roll_stat(entity_2, stat_2)
-
-        if roll_1 > roll_2:
-            return (0, roll_1)
-        return (1, roll_2)
-
-
-if __name__ == "__main__":
-    from Die_Class import Die
+if __name__ == '__main__':
     from Weapon_Class import Weapon
+    from Die_Class import Die
 
-    dave = Entity().set_attribute('Vit', 3156)
-    joe = Entity().set_attribute('Str', 2865)
+    d4 = Die().set_num_sides(4)
 
-    game = Game_Master().add_entities([dave, joe])
+    dave = Entity() \
+        .set_attribute('Vit', 350) \
+        .set_attribute('Pat', 220) \
+        .set_attribute('Arc', 130) \
+        .set_attribute('Int', 330) \
+        .set_name('dave')
+    
+    wand = Weapon() \
+        .set_attr_use('Int', 'Pat') \
+        .set_attr_req(100, 100) \
+        .set_dmg_dice(d4, d4, d4)
 
-    print(game.clash_stats(dave, 'Vit', joe, 'Str'))
-    game.delta_HP(dave, -50)
-    print(game.active_entities[dave])
+    game = Game_Master().add_entities(dave)
+    
+    print(game.active_entities['dave'].hp, end=' ')
+    game.start_engagement()
+    print(game.active_entities['dave'].hp)
 
-    stick = Weapon().set_dmg_dice(Die().set_num_sides(20), Die().set_num_sides(20), Die().set_num_sides(20))
-    stick.set_use_attr('Str').set_attr_req(3000)
-    print(Entity.roll_damage(joe, stick))
-
-    print(dave.damage_type_modifiers)
+    print(BattleEntity.roll_damage(game.active_entities['dave'], wand))

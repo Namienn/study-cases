@@ -13,32 +13,28 @@ class Weapon():
         Current methods include:
          - atr_roll: handles the dice rolling for damage
         """
-        self.use_attr = None
-        self.attr_req = None
+        self.attr_use: tuple[str] = None
+        self.attr_req: tuple[int] = None
 
-        self.dmg_dice = []
+        self.dmg_dice: tuple[Die] = []
 
         self.dmg_type = None
     
-    def set_use_attr(self, *args: str):
+    def set_attr_use(self, *args: str):
         "Builder pattern for weapon attributes"
         for arg in args:
-            if type(arg) is not str:  # Error Handling
-                raise TypeError('Parameters must be string objects')
-            if arg.upper() not in gl.attributes:
-                raise ValueError('Weapon parameters must be valid Entity attributes')
+            gl.check_for_attribute(arg)
         
-        self.use_attr = args
+        self.attr_use = args
         return self
     
     def set_attr_req(self, *args: int):
         "Builder pattern for attribute requirements"
-        if len(args) != len(self.use_attr):
+
+        if len(args) != len(self.attr_use):
             raise IndexError('Amount of numbers given doesn\'t match the number of weapon attributes')
-        
         for arg in args:
-            if type(arg) is not int:
-                raise TypeError('Requirement must be an integer')
+            gl.check_for_type(arg, int)
             
         self.attr_req = args
         return self
@@ -46,29 +42,24 @@ class Weapon():
     def set_dmg_dice(self, *args: Die):
         "Builder pattern for damage die"
         for arg in args:
-            if type(arg) is not Die:  # Error Handling
-                raise TypeError('Parameters must be die objects.')
+            gl.check_for_type(arg, Die)
         
         self.dmg_dice = args
         return self
     
-    def set_dmg_type(self, typ: str):
+    def set_dmg_type(self, given_type: str):
         "Builder pattern for damage type"
-        if type(typ) is not str:  # Error Handling
-            raise TypeError('Parameter must be a str')
-        if typ.upper() not in gl.damage_types:
-            raise ValueError('Parameter must be valid damage type')
+        gl.check_for_dmg_type(given_type)
         
-        self.dmg_type = typ
+        self.dmg_type = given_type
         return self
 
     @classmethod
-    def atk_roll(cls, weapon):
-        """Class method for rolling attack dice.
-        
-        Receives a Weapon object.
-        
-        Returns a single number."""
+    def atk_roll(cls, weapon) -> int:
+        "Class method for rolling attack dice."
+
+        gl.check_for_type(weapon, Weapon)
+
         result = 0
         for die in weapon.dmg_dice:
             result += Die.roll(die)
@@ -76,9 +67,11 @@ class Weapon():
 
 
 if __name__ == "__main__":
-    stick = Weapon().set_use_attr('Str', 'Vit')
-
-    d4 = Die().set_num_sides(4)
-    stick.set_dmg_dice(d4, d4, d4, d4)
+    d4 = Die() \
+        .set_num_sides(4)
+    
+    stick = Weapon() \
+        .set_attr_use('Str', 'Vit') \
+        .set_dmg_dice(d4, d4, d4, d4)
     
     print(Weapon.atk_roll(stick))
