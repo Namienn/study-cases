@@ -12,8 +12,6 @@ class Entity():
          - name
          - attr_values
          - attr_dice
-         - element_mods
-         - dmg_type_mods
          
          Current methods include:
          - roll_stat: rolls for stat and handles the math, returning the power level
@@ -23,9 +21,6 @@ class Entity():
 
         self.attr_values = gl.build_attr_values_dict()
         self.attr_dice = gl.build_attr_dice_dict()
-
-        self.element_mods = gl.build_element_modifier_dict()
-        self.dmg_type_mods = gl.build_dmg_type_modifier_dict()
 
     def set_attribute(self, attribute: str, value: int):
         """Builder pattern for attr_values.
@@ -98,3 +93,27 @@ class Entity():
             base_roll *= multiplier
 
         return int(base_roll)
+
+
+class BattleEntity(Entity):
+    def __init__(self) -> None:
+        super().__init__()
+
+        log_vit = log10(self.attr_values['VIT'])
+        log_pat = log10(self.attr_values['PAT'])
+        self.hp = int(5**log_vit * log_pat*2)
+
+        log_arc = log10(self.attr_values['ARC'])
+        log_int = log10(self.attr_values['INT'])
+        self.mp = int(4**log_arc*log_int*3)
+
+        self.attr_mods = gl.build_attr_modifier_dict()
+        self.element_mods = gl.build_element_modifier_dict()
+        self.dmg_type_mods = gl.build_dmg_type_modifier_dict()
+
+        self.abilities = {}
+    
+    @classmethod
+    def delta_hp(cls, b_entity, value: int) -> None:
+        b_entity.hp += value
+

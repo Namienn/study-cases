@@ -46,6 +46,17 @@ def build_dmg_type_modifier_dict() -> dict:
     return frame_dict
 
 
+# Battle Statuses Standardization
+
+def build_attr_modifier_dict() -> dict:
+    "Constucts the Attribute Modifiers dict based on the current set of attributes"
+    frame_dict = {}
+    for attr in attributes:
+        frame_dict[attr] = 1
+    
+    return frame_dict
+
+
 
 # Common Error Handling Routines
 
