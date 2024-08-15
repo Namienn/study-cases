@@ -52,7 +52,7 @@ class Die():
     def roll(die) -> int:
         "Class method for single die roll."
 
-        return (randint(1, die.num_sides) + die.modifier) * die.scalar
+        return randint(1, die.num_sides) * die.scalar + die.modifier
     
     @classmethod
     def sum_roll(cls, *dice) -> int:
@@ -67,7 +67,7 @@ class Die():
         return final_sum
     
     @classmethod
-    def clash_roll(cls, *dice) -> list:
+    def clash_roll(cls, *dice) -> list[list]:
         """Class method for clashing multiple dice roll.
 
         Returns a list with the die indexes ordered from highest to lowest, each in a sublist.

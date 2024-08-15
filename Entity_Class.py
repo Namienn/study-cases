@@ -9,7 +9,7 @@ class Entity():
         """A collection of the fundamental parts for any entity.
         
         Current properties (and build patterns) include:
-         - name
+         - id_name
          - attr_values
          - attr_dice
          
@@ -17,10 +17,10 @@ class Entity():
          - roll_stat: rolls for stat and handles the math, returning the power level
          - battle_stats: returns a tuple with the entity's conflict stats
          """
-        self.name = ''
+        self.id_name = ''
 
-        self.attr_values = gl.build_attr_values_dict()
-        self.attr_dice = gl.build_attr_dice_dict()
+        self.attr_values: dict[str, int] = gl.build_attr_values_dict()
+        self.attr_dice: dict[str, Die] = gl.build_attr_dice_dict()
 
     def set_attribute(self, attribute: str, value: int):
         """Builder pattern for attr_values.
@@ -40,7 +40,7 @@ class Entity():
 
         gl.check_for_type(name, str)  # Error Handling
 
-        self.name = name
+        self.id_name = name
         return self
     
     @classmethod
@@ -80,9 +80,9 @@ class BattleEntity(Entity):
         self.hp = 0
         self.mp = 0
 
-        self.attr_mods = gl.build_attr_modifier_dict()
-        self.element_mods = gl.build_element_modifier_dict()
-        self.dmg_type_mods = gl.build_dmg_type_modifier_dict()
+        self.attr_mods: dict[str, float] = gl.build_attr_modifier_dict()
+        self.element_mods: dict[str, float] = gl.build_element_modifier_dict()
+        self.dmg_type_mods: dict[str, float] = gl.build_dmg_type_modifier_dict()
 
         self.abilities = {}
 
@@ -127,7 +127,7 @@ class BattleEntity(Entity):
         b_entity.hp += value
 
     @classmethod
-    def clash_stats(cls, b_entities: dict) -> list:
+    def clash_stats(cls, b_entities: dict) -> list[list]:
         """Class method for stat conflict settling. 
         
         Receives a dict with the keys as the entities and the
@@ -172,11 +172,11 @@ class BattleEntity(Entity):
     def roll_damage(cls, entity, weapon:Weapon) -> int:
         "Handles the math behind rolling for damage."
 
-        gl.check_for_type(entity, Entity)  # Error Handling
+        gl.check_for_type(entity, BattleEntity)  # Error Handling
         gl.check_for_type(weapon, Weapon)  # Error Handling
         
         base_roll = Weapon.atk_roll(weapon)  # Base roll
-        for c, stat in enumerate(weapon.use_attr):
+        for c, stat in enumerate(weapon.attr_use):
             given_stat = entity.attr_values[stat.upper()]
 
             multiplier = given_stat/weapon.attr_req[c]  # Calculates how much of the requirement the entity has
@@ -190,10 +190,18 @@ class BattleEntity(Entity):
 
 
 if __name__ == '__main__':
-    dave = Entity().set_attribute('Vit', 350).set_attribute('Pat', 220).set_attribute('Arc', 130).set_attribute('Int', 330)
+    dave = Entity() \
+        .set_attribute('Vit', 350) \
+        .set_attribute('Pat', 220) \
+        .set_attribute('Arc', 130) \
+        .set_attribute('Int', 330)
     f_dave = BattleEntity.from_entity(dave)
 
-    joe = Entity().set_attribute('Vit', 90).set_attribute('Pat', 120).set_attribute('Arc', 640).set_attribute('Int', 440)
+    joe = Entity() \
+        .set_attribute('Vit', 90) \
+        .set_attribute('Pat', 120) \
+        .set_attribute('Arc', 640) \
+        .set_attribute('Int', 440)
     f_joe = BattleEntity.from_entity(joe)
 
     BattleEntity.start_up(f_dave)
