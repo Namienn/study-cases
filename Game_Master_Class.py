@@ -12,6 +12,7 @@ class Game_Master():
         Current methods include:
         - clash_stats: settles a conflict between two attributes of two entities
         """
+        
         self.active_entities = {}
 
     def add_entities(self, ent_list: tuple):
@@ -25,7 +26,7 @@ class Game_Master():
         
         return self
     
-    def delta_HP(self, entity, value):
+    def delta_HP(self, entity, value: int) -> None:
         "Facade for altering HP value. Adds given value to an active entity"
 
         if entity not in self.active_entities.keys():  # Error Handling
