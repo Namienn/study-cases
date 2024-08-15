@@ -73,8 +73,8 @@ class BattleEntity(Entity):
         
         Current methods include:
         - delta_hp: Adds a given value to the entity's health points
-        - clash_stats: ##### WIP #####
-        - roll_damage: Returns the damage output of a weapon yielded by an entity"""
+        - clash_stats: Calculates the winner of a clash between attributes.
+        - roll_damage: Calculates the damage output of a weapon yielded by an entity"""
         super().__init__()
 
         self.hp = 0
