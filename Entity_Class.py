@@ -43,22 +43,6 @@ class Entity():
         self.name = name
         return self
     
-
-    def battle_stats(self):
-        """ Functionality to be terminated
-        
-        Conflict stats generator. Returns a List with the following:
-        
-        - Given Entity
-        - Entity's HP: calculate through: 5**log10(VIT) * log10(VIT)*2
-        """
-
-        log_vit = log10(self.attr_values['VIT'])
-        health_points = int(5**log_vit * log_vit*2)
-
-        return (self, health_points)
-
-    
     @classmethod
     def roll_stat(cls, entity, attribute: str, scale: int = 0.1) -> float:
         """Class method for rolling a given stat for a given entity,
@@ -73,26 +57,6 @@ class Entity():
         
         modifier = Die.roll(die) * scale
         return entity.attr_values[attribute.upper()] * (modifier+0.4)
-    
-    @classmethod 
-    def roll_damage(cls, entity, weapon:Weapon) -> int:
-        "Handles the math behind rolling for damage."
-
-        gl.check_for_type(entity, Entity)  # Error Handling
-        gl.check_for_type(weapon, Weapon)  # Error Handling
-        
-        base_roll = Weapon.atk_roll(weapon)  # Base roll
-        for c, stat in enumerate(weapon.use_attr):
-            given_stat = entity.attr_values[stat.upper()]
-
-            multiplier = given_stat/weapon.attr_req[c]  # Calculates how much of the requirement the entity has
-            if multiplier < 0.5:  # Caps the minimum at .5, collapsing it to 0 below that 0
-                multiplier = 0
-            if multiplier > 1.5:  # Caps the maximum at 1.5
-                multiplier = 1.5
-            base_roll *= multiplier
-
-        return int(base_roll)
 
 
 class BattleEntity(Entity):
@@ -116,4 +80,44 @@ class BattleEntity(Entity):
     @classmethod
     def delta_hp(cls, b_entity, value: int) -> None:
         b_entity.hp += value
+
+    @classmethod
+    def clash_stats(cls, entity_1, stat_1:str, entity_2, stat_2:str) -> tuple:
+        """Class method for stat conflict settling. 
+        
+        Receives two sets of Entity, str.
+        
+        Returns the index of the winner and the roll result."""
+
+        gl.check_for_type(entity_1, BattleEntity)
+        gl.check_for_attribute(stat_1)
+        gl.check_for_type(entity_2, BattleEntity)
+        gl.check_for_attribute(stat_2)
+
+        roll_1 = Entity.roll_stat(entity_1, stat_1)
+        roll_2 = Entity.roll_stat(entity_2, stat_2)
+
+        if roll_1 > roll_2:
+            return (0, roll_1)
+        return (1, roll_2)
+    
+    @classmethod 
+    def roll_damage(cls, entity, weapon:Weapon) -> int:
+        "Handles the math behind rolling for damage."
+
+        gl.check_for_type(entity, Entity)  # Error Handling
+        gl.check_for_type(weapon, Weapon)  # Error Handling
+        
+        base_roll = Weapon.atk_roll(weapon)  # Base roll
+        for c, stat in enumerate(weapon.use_attr):
+            given_stat = entity.attr_values[stat.upper()]
+
+            multiplier = given_stat/weapon.attr_req[c]  # Calculates how much of the requirement the entity has
+            if multiplier < 0.5:  # Caps the minimum at .5, collapsing it to 0 below that 0
+                multiplier = 0
+            if multiplier > 1.5:  # Caps the maximum at 1.5
+                multiplier = 1.5
+            base_roll *= multiplier
+
+        return int(base_roll)
 
