@@ -50,11 +50,7 @@ def build_dmg_type_modifier_dict() -> dict:
 
 def build_attr_modifier_dict() -> dict:
     "Constucts the Attribute Modifiers dict based on the current set of attributes"
-    frame_dict = {}
-    for attr in attributes:
-        frame_dict[attr] = 1
-    
-    return frame_dict
+    return build_attr_values_dict()
 
 
 
