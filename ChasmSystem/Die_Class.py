@@ -67,7 +67,7 @@ class Die():
         return final_sum
     
     @classmethod
-    def clash_roll(cls, *dice) -> list[list]:
+    def clash_roll(cls, *dice) -> tuple[list, list]:
         """Class method for clashing multiple dice roll.
 
         Returns a list with the die indexes ordered from highest to lowest, each in a sublist.

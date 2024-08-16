@@ -60,7 +60,7 @@ def build_attr_modifier_dict() -> dict:
 
 # Common Error Handling Routines
 
-def check_for_type(element: any, type_check: any, message: str = 'Parameter type invalid') -> None:
+def check_for_type(element, type_check, message: str = 'Parameter type invalid') -> None:
     if type(element) is not type_check:
         raise TypeError(message + f' - {type(element)} != {type_check}')
 
