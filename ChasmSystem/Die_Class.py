@@ -1,5 +1,5 @@
 from random import randint
-import Global_Config as gl
+from . import Global_Config as gl
 
 class Die():
     def __init__(self) -> None:

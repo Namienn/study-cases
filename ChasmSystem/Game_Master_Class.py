@@ -1,5 +1,5 @@
-from Entity_Class import Entity, BattleEntity
-import Global_Config as gl
+from .Entity_Class import Entity, BattleEntity
+from . import Global_Config as gl
     
 
 class GameMaster():
