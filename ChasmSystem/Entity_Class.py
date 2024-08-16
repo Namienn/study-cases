@@ -1,6 +1,8 @@
-from .Die_Class import Die
-from .Weapon_Class import Weapon
-from . import Global_Config as gl
+from hmac import new
+from Aspect_Class import Aspect
+from Die_Class import Die
+from Weapon_Class import Weapon
+import Global_Config as gl
 from math import log10
 
 class Entity():
@@ -12,6 +14,8 @@ class Entity():
          - id_name
          - attr_values
          - attr_dice
+         - attr_mods
+         - aspects
          
          Current methods include:
          - roll_stat: rolls for stat and handles the math, returning the power level
@@ -24,7 +28,7 @@ class Entity():
 
         self.attr_mods: dict[str, float] = gl.build_attr_modifier_dict()
 
-        self.abilities = {}
+        self.aspect: Aspect = Aspect()
 
     def set_attribute(self, attribute: str, value: int):
         """Builder pattern for attr_values.
@@ -46,7 +50,24 @@ class Entity():
 
         self.id_name = name
         return self
-    
+
+    def add_aspects(self, *args: Aspect):
+        "Builder pattern for aspects"
+
+        new_aspect = self.aspect
+        for arg in args:
+            gl.check_for_type(arg, Aspect)
+            new_aspect = new_aspect.compose(arg)
+        
+        self.aspect = new_aspect
+        return self
+
+    @classmethod
+    def init_mods(cls, entity):
+        for attr in gl.attributes:
+            for aspect in entity.aspect.composition:
+                entity.attr_mods[attr] *= aspect.attr_mod_values[attr]
+
     @classmethod
     def roll_stat(cls, entity, attribute: str, scale: float = 0.1) -> int:
         """Class method for rolling a given stat for a given entity,
@@ -58,9 +79,10 @@ class Entity():
         die = entity.attr_dice[attribute.upper()]
         if die is None:
             die = Die().set_num_sides(20)
-        
         modifier = Die.roll(die) * scale
-        return int(entity.attr_values[attribute.upper()] * (modifier+0.4))
+
+        base_value = entity.attr_values[attribute.upper()] * entity.attr_mods[attribute.upper()]
+        return int(base_value * (modifier+0.4))
     
     @classmethod
     def clash_stats(cls, b_entities: dict) -> tuple[list, list]:
@@ -78,9 +100,9 @@ class Entity():
             roll_attribute = entry[1]
 
             gl.check_for_attribute(roll_attribute)  # Error Handling
-            gl.check_for_type(current_entity, BattleEntity)
+            gl.check_for_type(current_entity, Entity)
             
-            rolls.append(BattleEntity.roll_stat(current_entity, roll_attribute))
+            rolls.append(cls.roll_stat(current_entity, roll_attribute))
         
         # Code snippet copied over from Die class
         # Check over there for better explanation of the
@@ -103,7 +125,7 @@ class Entity():
             rolls[max_index] = -1  # Step 4
         
         return win_order[:-1], win_values[:-1]
-
+        
 
 class BattleEntity(Entity):
     def __init__(self) -> None:
@@ -192,4 +214,17 @@ if __name__ == '__main__':
     BattleEntity.start_up(f_dave)
     print(f_dave.hp, f_dave.mp)
 
-    print(Entity.clash_stats({f_dave: 'Vit', f_joe: 'Arc'}))
+    print(Entity.clash_stats({dave: 'Vit', joe: 'Arc'}))
+
+    metabolizing = Aspect() \
+        .set_attr_mod('Vit', 1.5)
+    
+    breathing = Aspect() \
+        .set_attr_mod('Vit', 2.0)
+
+    living = Aspect.compose(metabolizing, breathing)
+
+    print(Entity.roll_stat(dave, 'Vit'))
+    dave.add_aspects(living, breathing)
+    Entity.init_mods(dave)
+    print(Entity.roll_stat(dave, 'Vit'))
