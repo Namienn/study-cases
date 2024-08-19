@@ -59,7 +59,7 @@ class Entity():
             gl.check_for_type(arg, Aspect)
             new_aspect = new_aspect.compose(arg)
         
-        self.aspect = new_aspect.init_multipliers()
+        self.aspect = new_aspect.init_aspect()
         return self.init_mods()
 
     def init_mods(self):

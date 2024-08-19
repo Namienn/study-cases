@@ -6,12 +6,13 @@ class Aspect():
         """A Tool for iteratively prototyping entities
         
         Current properties (and builder patterns) include:
-        - attr_mod_values
-        - elem_mod_values
-        - dmg_type_mod_values
+        - attr_mods
+        - element_mods
+        - dmg_type_mods
         
         Current methods include:
         - compose: joins the abilities and composes the modifiers of two Aspects
+        - init_multipliers: 
         """
 
         self.attr_mods = gl.build_attr_modifier_dict()
@@ -22,6 +23,7 @@ class Aspect():
         self.attached_abilities = None
     
     def set_attr_mod(self, attribute, value: float):
+        "Builder Pattern for atr_mods"
 
         gl.check_for_attribute(attribute)  # Error Handling
         gl.check_for_type(value, float)
@@ -49,8 +51,15 @@ class Aspect():
         return self
     
     def compose(self, aspect):
+        "Method that returns a composite aspect based on both the original and the given one"
         gl.check_for_type(aspect, Aspect)
         new_aspect = Aspect()
+
+        # Implementation:
+        # This method allows for the emergent creation of more complex
+        # Aspects while preventing heritage duplication. Due to the way
+        # this method is implemented, it creates a difference between
+        # fundamental and composite Aspects.
 
         new_comp: list[Aspect] = []
         comp_1: tuple = self.composition
@@ -62,8 +71,8 @@ class Aspect():
         
         return new_aspect
 
-    def init_multipliers(self):
-        "Feature method for redefining Aspect properties"
+    def init_aspect(self):
+        "Feature method for defining Aspect properties"
 
         self.attr_mods = gl.build_attr_modifier_dict()
         self.element_mods = gl.build_element_modifier_dict()
