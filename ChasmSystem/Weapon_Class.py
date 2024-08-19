@@ -1,5 +1,5 @@
-from .Die_Class import Die
-from . import Global_Config as gl
+from Die_Class import Die
+import Global_Config as gl
 
 class Weapon():
     def __init__(self) -> None:
@@ -13,10 +13,10 @@ class Weapon():
         Current methods include:
          - atr_roll: handles the dice rolling for damage
         """
-        self.attr_use: tuple[str] = None
-        self.attr_req: tuple[int] = None
+        self.attr_use: tuple[str, ...] 
+        self.attr_req: tuple[int, ...] 
 
-        self.dmg_dice: tuple[Die] = []
+        self.dmg_dice: tuple[Die, ...] 
 
         self.dmg_type = None
     

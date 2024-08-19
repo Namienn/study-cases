@@ -1,6 +1,7 @@
 
 #specific files for privacy reasons. 
 Github_Code
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

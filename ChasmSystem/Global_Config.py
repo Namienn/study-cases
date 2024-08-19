@@ -5,6 +5,9 @@
 
 # Attribute Standardization
 
+from ast import List
+
+
 attributes = ('STR', 'DEX', 'VIT', 'PER', 'INT', 'CHA', 'LCK', 'WIS', 'ARC', 'PAT')  # Attribute names
 
 def build_attr_values_dict() -> dict:
@@ -50,17 +53,12 @@ def build_dmg_type_modifier_dict() -> dict:
 
 def build_attr_modifier_dict() -> dict:
     "Constucts the Attribute Modifiers dict based on the current set of attributes"
-    frame_dict = {}
-    for attr in attributes:
-        frame_dict[attr] = 1
-    
-    return frame_dict
-
+    return build_attr_values_dict()
 
 
 # Common Error Handling Routines
 
-def check_for_type(element: any, type_check: any, message: str = 'Parameter type invalid') -> None:
+def check_for_type(element, type_check, message: str = 'Parameter type invalid') -> None:
     if type(element) is not type_check:
         raise TypeError(message + f' - {type(element)} != {type_check}')
 
@@ -78,4 +76,18 @@ def check_for_dmg_type(element: str, message: str = 'Parameter is not a valid da
     check_for_type(element, str)
     if element.upper() not in damage_types:
         raise ValueError(message)
-    
+
+
+# Complex Methods
+
+def union_list(iter_1: list|tuple, iter_2: list|tuple) -> list:
+    union_list = []
+    el_list = []
+    el_list.extend (iter_1)
+    el_list.extend (iter_2)
+
+    for el in el_list:
+        if el not in union_list:
+            union_list.append(el)
+
+    return union_list

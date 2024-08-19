@@ -1,6 +1,8 @@
-from .Die_Class import Die
-from .Weapon_Class import Weapon
-from . import Global_Config as gl
+from hmac import new
+from Aspect_Class import Aspect
+from Die_Class import Die
+from Weapon_Class import Weapon
+import Global_Config as gl
 from math import log10
 
 class Entity():
@@ -12,6 +14,8 @@ class Entity():
          - id_name
          - attr_values
          - attr_dice
+         - attr_mods
+         - aspects
          
          Current methods include:
          - roll_stat: rolls for stat and handles the math, returning the power level
@@ -21,6 +25,10 @@ class Entity():
 
         self.attr_values: dict[str, int] = gl.build_attr_values_dict()
         self.attr_dice: dict[str, Die] = gl.build_attr_dice_dict()
+
+        self.attr_mods: dict[str, float] = gl.build_attr_modifier_dict()
+
+        self.aspect: Aspect = Aspect()
 
     def set_attribute(self, attribute: str, value: int):
         """Builder pattern for attr_values.
@@ -42,9 +50,26 @@ class Entity():
 
         self.id_name = name
         return self
-    
+
+    def add_aspects(self, *args: Aspect):
+        "Builder pattern for aspects"
+
+        new_aspect = self.aspect
+        for arg in args:
+            gl.check_for_type(arg, Aspect)
+            new_aspect = new_aspect.compose(arg)
+        
+        self.aspect = new_aspect.init_aspect()
+        return self.init_mods()
+
+    def init_mods(self):
+        "Feature method for fetching data from Aspect"
+        self.attr_mods = self.aspect.attr_mods
+
+        return self
+
     @classmethod
-    def roll_stat(cls, entity, attribute: str, scale: int = 0.1) -> int:
+    def roll_stat(cls, entity, attribute: str, scale: float = 0.1) -> int:
         """Class method for rolling a given stat for a given entity,
         according to it's corresponding die (defaults to d20). """
 
@@ -54,80 +79,13 @@ class Entity():
         die = entity.attr_dice[attribute.upper()]
         if die is None:
             die = Die().set_num_sides(20)
-        
         modifier = Die.roll(die) * scale
-        return int(entity.attr_values[attribute.upper()] * (modifier+0.4))
 
-
-class BattleEntity(Entity):
-    def __init__(self) -> None:
-        """The spotlight of encounters
-        
-        Current properties include:
-        - hp: Health Points
-        - mp: Mana Points
-        - attr_mods
-        - element_mods
-        - dmg_type_mods
-        - abilities
-        
-        Current methods include:
-        - delta_hp: Adds a given value to the entity's health points
-        - clash_stats: Calculates the winner of a clash between attributes.
-        - roll_damage: Calculates the damage output of a weapon yielded by an entity"""
-        super().__init__()
-
-        self.hp = 0
-        self.mp = 0
-
-        self.attr_mods: dict[str, float] = gl.build_attr_modifier_dict()
-        self.element_mods: dict[str, float] = gl.build_element_modifier_dict()
-        self.dmg_type_mods: dict[str, float] = gl.build_dmg_type_modifier_dict()
-
-        self.abilities = {}
-
-    @classmethod
-    def from_entity(cls, entity: Entity):
-        gl.check_for_type(entity, Entity)
-
-        new_b_entity = cls()
-        new_b_entity.attr_values = entity.attr_values
-        new_b_entity.attr_dice = entity.attr_dice
-
-        return new_b_entity
+        base_value = entity.attr_values[attribute.upper()] * entity.attr_mods[attribute.upper()]
+        return int(base_value * (modifier+0.4))
     
     @classmethod
-    def start_up(cls, b_entity) -> None:
-        log_vit = log10(b_entity.attr_values['VIT'])
-        log_pat = log10(b_entity.attr_values['PAT'])
-        b_entity.hp = int(5**log_vit * log_pat*2)
-
-        log_arc = log10(b_entity.attr_values['ARC'])
-        log_int = log10(b_entity.attr_values['INT'])
-        b_entity.mp = int(4**log_arc*log_int*3)
-    
-    @classmethod
-    def roll_stat(cls, entity, attribute: str, scale: int = 0.1) -> int:
-        """Class method for rolling a given stat for a given entity,
-        according to it's corresponding die (defaults to d20). """
-
-        gl.check_for_type(entity, BattleEntity)  # Error Handling
-        gl.check_for_attribute(attribute)
-        
-        die = entity.attr_dice[attribute.upper()]
-        if die is None:
-            die = Die().set_num_sides(20)
-        
-        modifier = Die.roll(die) * scale
-        modified_attr = entity.attr_values[attribute.upper()] * entity.attr_mods[attribute.upper()]
-        return int(modified_attr * (modifier+0.4))
-
-    @classmethod
-    def delta_hp(cls, b_entity, value: int) -> None:
-        b_entity.hp += value
-
-    @classmethod
-    def clash_stats(cls, b_entities: dict) -> list[list]:
+    def clash_stats(cls, b_entities: dict) -> tuple[list, list]:
         """Class method for stat conflict settling. 
         
         Receives a dict with the keys as the entities and the
@@ -142,9 +100,9 @@ class BattleEntity(Entity):
             roll_attribute = entry[1]
 
             gl.check_for_attribute(roll_attribute)  # Error Handling
-            gl.check_for_type(current_entity, BattleEntity)
+            gl.check_for_type(current_entity, Entity)
             
-            rolls.append(BattleEntity.roll_stat(current_entity, roll_attribute))
+            rolls.append(cls.roll_stat(current_entity, roll_attribute))
         
         # Code snippet copied over from Die class
         # Check over there for better explanation of the
@@ -167,6 +125,65 @@ class BattleEntity(Entity):
             rolls[max_index] = -1  # Step 4
         
         return win_order[:-1], win_values[:-1]
+        
+
+class BattleEntity(Entity):
+    def __init__(self) -> None:
+        """The spotlight of encounters
+        
+        Current properties include:
+        - hp: Health Points
+        - mp: Mana Points
+        - attr_mods
+        - element_mods
+        - dmg_type_mods
+        - abilities
+        
+        Current methods include:
+        - delta_hp: Adds a given value to the entity's health points
+        - clash_stats: Calculates the winner of a clash between attributes.
+        - roll_damage: Calculates the damage output of a weapon yielded by an entity"""
+        super().__init__()
+
+        self.hp = 0
+        self.mp = 0
+
+        self.element_mods: dict[str, float] = gl.build_element_modifier_dict()
+        self.dmg_type_mods: dict[str, float] = gl.build_dmg_type_modifier_dict()
+
+    def init_mods(self):
+        "Feature method for fetching data from Aspect"
+        self.attr_mods = self.aspect.attr_mods
+        self.element_mods = self.aspect.element_mods
+        self.dmg_type_mods = self.aspect.dmg_type_mods
+
+        return self
+
+    @classmethod
+    def from_entity(cls, entity: Entity):
+        gl.check_for_type(entity, Entity)
+
+        new_b_entity = cls()
+        new_b_entity.attr_values = entity.attr_values
+        new_b_entity.attr_dice = entity.attr_dice
+
+        new_b_entity.aspect = entity.aspect
+
+        return new_b_entity.init_mods()
+    
+    @classmethod
+    def start_up(cls, b_entity) -> None:
+        log_vit = log10(b_entity.attr_values['VIT'])
+        log_pat = log10(b_entity.attr_values['PAT'])
+        b_entity.hp = int(5**log_vit * log_pat*2)
+
+        log_arc = log10(b_entity.attr_values['ARC'])
+        log_int = log10(b_entity.attr_values['INT'])
+        b_entity.mp = int(4**log_arc*log_int*3)
+
+    @classmethod
+    def delta_hp(cls, b_entity, value: int) -> None:
+        b_entity.hp += value
     
     @classmethod 
     def roll_damage(cls, entity, weapon:Weapon) -> int:
@@ -190,21 +207,36 @@ class BattleEntity(Entity):
 
 
 if __name__ == '__main__':
+    metabolizing = Aspect() \
+        .set_attr_mod('Vit', 1.5)
+    
+    breathing = Aspect() \
+        .set_attr_mod('Vit', 5.0)
+
+    living = Aspect.compose(metabolizing, breathing)
+
     dave = Entity() \
         .set_attribute('Vit', 350) \
         .set_attribute('Pat', 220) \
         .set_attribute('Arc', 130) \
-        .set_attribute('Int', 330)
+        .set_attribute('Int', 330) \
+        .add_aspects(living)
     f_dave = BattleEntity.from_entity(dave)
 
     joe = Entity() \
         .set_attribute('Vit', 90) \
         .set_attribute('Pat', 120) \
         .set_attribute('Arc', 640) \
-        .set_attribute('Int', 440)
+        .set_attribute('Int', 440) \
+        .add_aspects(metabolizing, breathing)
     f_joe = BattleEntity.from_entity(joe)
 
+    print(f_dave.hp, f_dave.mp)
     BattleEntity.start_up(f_dave)
     print(f_dave.hp, f_dave.mp)
 
-    print(BattleEntity.clash_stats({f_dave: 'Vit', f_joe: 'Arc'}))
+    print(Entity.clash_stats({dave: 'Vit', joe: 'Arc'}))
+
+    print(f_dave.attr_mods)
+    print(f_joe.attr_mods)
+
