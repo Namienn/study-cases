@@ -57,7 +57,7 @@ class Entity():
         new_aspect = self.aspect
         for arg in args:
             gl.check_for_type(arg, Aspect)
-            new_aspect = new_aspect.compose(arg)
+            new_aspect = Aspect.compose(new_aspect, arg)
         
         self.aspect = new_aspect.init_aspect()
         return self.init_mods()
@@ -68,12 +68,11 @@ class Entity():
 
         return self
 
-    @classmethod
-    def roll_stat(cls, entity, attribute: str, scale: float = 0.1) -> int:
+    @staticmethod
+    def roll_stat(entity, attribute: str, scale: float = 0.1) -> int:
         """Class method for rolling a given stat for a given entity,
         according to it's corresponding die (defaults to d20). """
 
-        gl.check_for_type(entity, Entity)  # Error Handling
         gl.check_for_attribute(attribute)
         
         die = entity.attr_dice[attribute.upper()]
@@ -81,11 +80,11 @@ class Entity():
             die = Die().set_num_sides(20)
         modifier = Die.roll(die) * scale
 
-        base_value = entity.attr_values[attribute.upper()] * entity.attr_mods[attribute.upper()]
+        base_value = entity.attr_values[attribute.upper()] * entity.attr_mods[attribute.upper()]  # Attribute Modifier is applied here
         return int(base_value * (modifier+0.4))
     
-    @classmethod
-    def clash_stats(cls, b_entities: dict) -> tuple[list, list]:
+    @staticmethod
+    def clash_stats(b_entities: dict) -> tuple[list, list]:
         """Class method for stat conflict settling. 
         
         Receives a dict with the keys as the entities and the
@@ -100,9 +99,8 @@ class Entity():
             roll_attribute = entry[1]
 
             gl.check_for_attribute(roll_attribute)  # Error Handling
-            gl.check_for_type(current_entity, Entity)
             
-            rolls.append(cls.roll_stat(current_entity, roll_attribute))
+            rolls.append(Entity.roll_stat(current_entity, roll_attribute))
         
         # Code snippet copied over from Die class
         # Check over there for better explanation of the
@@ -161,6 +159,7 @@ class BattleEntity(Entity):
 
     @classmethod
     def from_entity(cls, entity: Entity):
+        "BattleEntity Constructor that uses an Entity object as foundation"
         gl.check_for_type(entity, Entity)
 
         new_b_entity = cls()
@@ -171,8 +170,9 @@ class BattleEntity(Entity):
 
         return new_b_entity.init_mods()
     
-    @classmethod
-    def start_up(cls, b_entity) -> None:
+    @staticmethod
+    def start_up(b_entity) -> None:
+        "Method to generate the BattleEntity's stats"
         log_vit = log10(b_entity.attr_values['VIT'])
         log_pat = log10(b_entity.attr_values['PAT'])
         b_entity.hp = int(5**log_vit * log_pat*2)
@@ -181,12 +181,13 @@ class BattleEntity(Entity):
         log_int = log10(b_entity.attr_values['INT'])
         b_entity.mp = int(4**log_arc*log_int*3)
 
-    @classmethod
-    def delta_hp(cls, b_entity, value: int) -> None:
+    @staticmethod
+    def delta_hp(b_entity, value: int) -> None:
+        "Method to handle any adjacent processes of modifying an BattleEntity's HP (mostly placeholder for now)"
         b_entity.hp += value
     
-    @classmethod 
-    def roll_damage(cls, entity, weapon:Weapon) -> int:
+    @staticmethod 
+    def roll_damage(entity, weapon:Weapon) -> int:
         "Handles the math behind rolling for damage."
 
         gl.check_for_type(entity, BattleEntity)  # Error Handling

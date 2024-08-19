@@ -26,6 +26,7 @@ class GameMaster():
         return self
     
     def start_engagement(self) -> None:
+        "Feature method that calls for the initialization of every entity"
         for ent in self.active_entities.values():
             BattleEntity.start_up(ent)
 

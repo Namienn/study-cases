@@ -54,20 +54,20 @@ class Die():
 
         return randint(1, die.num_sides) * die.scalar + die.modifier
     
-    @classmethod
-    def sum_roll(cls, *dice) -> int:
+    @staticmethod
+    def sum_roll(*dice) -> int:
         "Class method for additive multiple dice roll."
         
         final_sum = 0
         for die in dice:
             gl.check_for_type(die, Die, 'Dice list includes non-die elements')  # Error Handling
             
-            final_sum += cls.roll(die)
+            final_sum += Die.roll(die)
 
         return final_sum
     
-    @classmethod
-    def clash_roll(cls, *dice) -> tuple[list, list]:
+    @staticmethod
+    def clash_roll(*dice) -> tuple[list, list]:
         """Class method for clashing multiple dice roll.
 
         Returns a list with the die indexes ordered from highest to lowest, each in a sublist.
@@ -77,7 +77,7 @@ class Die():
         for die in dice:
             gl.check_for_type(die, Die, 'Dice list includes non-die elements')  # Error Handling
             
-            rolls.append(cls.roll(die))
+            rolls.append(Die.roll(die))
         
         # Sorting Method:
         # Step 1: Find max value and it's index
