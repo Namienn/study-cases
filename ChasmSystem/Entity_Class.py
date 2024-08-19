@@ -59,14 +59,14 @@ class Entity():
             gl.check_for_type(arg, Aspect)
             new_aspect = new_aspect.compose(arg)
         
-        self.aspect = new_aspect
-        return self
+        self.aspect = new_aspect.init_multipliers()
+        return self.init_mods()
 
-    @classmethod
-    def init_mods(cls, entity):
-        for attr in gl.attributes:
-            for aspect in entity.aspect.composition:
-                entity.attr_mods[attr] *= aspect.attr_mod_values[attr]
+    def init_mods(self):
+        "Feature method for fetching data from Aspect"
+        self.attr_mods = self.aspect.attr_mods
+
+        return self
 
     @classmethod
     def roll_stat(cls, entity, attribute: str, scale: float = 0.1) -> int:
@@ -151,6 +151,14 @@ class BattleEntity(Entity):
         self.element_mods: dict[str, float] = gl.build_element_modifier_dict()
         self.dmg_type_mods: dict[str, float] = gl.build_dmg_type_modifier_dict()
 
+    def init_mods(self):
+        "Feature method for fetching data from Aspect"
+        self.attr_mods = self.aspect.attr_mods
+        self.element_mods = self.aspect.element_mods
+        self.dmg_type_mods = self.aspect.dmg_type_mods
+
+        return self
+
     @classmethod
     def from_entity(cls, entity: Entity):
         gl.check_for_type(entity, Entity)
@@ -159,7 +167,9 @@ class BattleEntity(Entity):
         new_b_entity.attr_values = entity.attr_values
         new_b_entity.attr_dice = entity.attr_dice
 
-        return new_b_entity
+        new_b_entity.aspect = entity.aspect
+
+        return new_b_entity.init_mods()
     
     @classmethod
     def start_up(cls, b_entity) -> None:
@@ -197,34 +207,36 @@ class BattleEntity(Entity):
 
 
 if __name__ == '__main__':
+    metabolizing = Aspect() \
+        .set_attr_mod('Vit', 1.5)
+    
+    breathing = Aspect() \
+        .set_attr_mod('Vit', 5.0)
+
+    living = Aspect.compose(metabolizing, breathing)
+
     dave = Entity() \
         .set_attribute('Vit', 350) \
         .set_attribute('Pat', 220) \
         .set_attribute('Arc', 130) \
-        .set_attribute('Int', 330)
+        .set_attribute('Int', 330) \
+        .add_aspects(living)
     f_dave = BattleEntity.from_entity(dave)
 
     joe = Entity() \
         .set_attribute('Vit', 90) \
         .set_attribute('Pat', 120) \
         .set_attribute('Arc', 640) \
-        .set_attribute('Int', 440)
+        .set_attribute('Int', 440) \
+        .add_aspects(metabolizing, breathing)
     f_joe = BattleEntity.from_entity(joe)
 
+    print(f_dave.hp, f_dave.mp)
     BattleEntity.start_up(f_dave)
     print(f_dave.hp, f_dave.mp)
 
     print(Entity.clash_stats({dave: 'Vit', joe: 'Arc'}))
 
-    metabolizing = Aspect() \
-        .set_attr_mod('Vit', 1.5)
-    
-    breathing = Aspect() \
-        .set_attr_mod('Vit', 2.0)
+    print(f_dave.attr_mods)
+    print(f_joe.attr_mods)
 
-    living = Aspect.compose(metabolizing, breathing)
-
-    print(Entity.roll_stat(dave, 'Vit'))
-    dave.add_aspects(living, breathing)
-    Entity.init_mods(dave)
-    print(Entity.roll_stat(dave, 'Vit'))
