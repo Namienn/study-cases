@@ -79,6 +79,16 @@ def check_for_dmg_type(element: str, message: str = 'Parameter is not a valid da
         raise ValueError(message)
 
 
+# Ability Flag Standardization
+
+parameter_flags = ('ALLOWS_STATS')
+
+def check_for_parameter_flag(element: str, message: str = 'Parameter is not a valid flag') -> None:
+    "Function to confirm if a given string qualifies as a parameter flag"
+    check_for_type(element, str)
+    if element.upper() not in parameter_flags:
+        raise ValueError(message)
+
 # Complex Methods
 
 def union_list(iter_1: list|tuple, iter_2: list|tuple) -> list:

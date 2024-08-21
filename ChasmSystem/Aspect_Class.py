@@ -1,5 +1,3 @@
-from shutil import ExecError
-from Die_Class import Die
 import Global_Config as gl
 
 class Aspect():
