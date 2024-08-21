@@ -50,7 +50,7 @@ class Aspect():
         return self
     
     def init_aspect(self):
-        "Feature method for defining composite Aspect properties"
+        "Feature method for kickstarting composite Aspect properties"
 
         if len(self.composition) == 1:  # If the called aspect isn't composite, it shouldn't change
             return self

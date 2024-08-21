@@ -12,9 +12,8 @@ class Entity():
         
         Current properties (and build patterns) include:
          - id_name
-         - attr_values
+         - attributes
          - attr_dice
-         - attr_mods
          - aspects
          
          Current methods include:
@@ -23,12 +22,22 @@ class Entity():
          """
         self.id_name = ''
 
-        self.attr_values: dict[str, int] = gl.build_attr_values_dict()
+        self._attr_values: dict[str, int] = gl.build_attr_values_dict()
         self.attr_dice: dict[str, Die] = gl.build_attr_dice_dict()
 
-        self.attr_mods: dict[str, float] = gl.build_attr_modifier_dict()
+        self._attr_mods: dict[str, float] = gl.build_attr_modifier_dict()
 
         self.aspect: Aspect = Aspect()
+
+    @property
+    def attributes(self):
+        "Property method for fetching Attributes"
+
+        attr_dict = {}
+        for attr in gl.attributes:
+            attr_dict[attr] = self._attr_values[attr] * self._attr_mods[attr]
+        
+        return attr_dict
 
     def set_attribute(self, attribute: str, value: int):
         """Builder pattern for attr_values.
@@ -40,7 +49,7 @@ class Entity():
         if type(value) != int or value < 0:
             raise TypeError('Attribute must be a non-negative integer')
         
-        self.attr_values[attribute.upper()] = value
+        self._attr_values[attribute.upper()] = value
         return self
 
     def set_name(self, name: str):
@@ -64,7 +73,7 @@ class Entity():
 
     def init_mods(self):
         "Feature method for fetching data from Aspect"
-        self.attr_mods = self.aspect.attr_mods
+        self._attr_mods = self.aspect.attr_mods
 
         return self
 
@@ -80,7 +89,7 @@ class Entity():
             die = Die().set_num_sides(20)
         modifier = Die.roll(die) * scale
 
-        base_value = entity.attr_values[attribute.upper()] * entity.attr_mods[attribute.upper()]  # Attribute Modifier is applied here
+        base_value = entity.attributes[attribute.upper()]  # Attribute Modifier is applied here
         return int(base_value * (modifier+0.4))
     
     @staticmethod
@@ -151,7 +160,7 @@ class BattleEntity(Entity):
 
     def init_mods(self):
         "Feature method for fetching data from Aspect"
-        self.attr_mods = self.aspect.attr_mods
+        self._attr_mods = self.aspect.attr_mods
         self.element_mods = self.aspect.element_mods
         self.dmg_type_mods = self.aspect.dmg_type_mods
 
@@ -163,7 +172,7 @@ class BattleEntity(Entity):
         gl.check_for_type(entity, Entity)
 
         new_b_entity = cls()
-        new_b_entity.attr_values = entity.attr_values
+        new_b_entity._attr_values = entity._attr_values
         new_b_entity.attr_dice = entity.attr_dice
 
         new_b_entity.aspect = entity.aspect
@@ -173,13 +182,13 @@ class BattleEntity(Entity):
     @staticmethod
     def start_up(b_entity) -> None:
         "Method to generate the BattleEntity's stats"
-        log_vit = log10(b_entity.attr_values['VIT'])
-        log_pat = log10(b_entity.attr_values['PAT'])
+        log_vit = log10(b_entity.attributes['VIT'])
+        log_pat = log10(b_entity.attributes['PAT'])
         b_entity.hp = int(5**log_vit * log_pat*2)
 
-        log_arc = log10(b_entity.attr_values['ARC'])
-        log_int = log10(b_entity.attr_values['INT'])
-        b_entity.mp = int(4**log_arc*log_int*3)
+        log_arc = log10(b_entity.attributes['ARC'])
+        log_int = log10(b_entity.attributes['INT'])
+        b_entity.mp = int(4**log_arc * log_int*3)
 
     @staticmethod
     def delta_hp(b_entity, value: int) -> None:
@@ -195,7 +204,7 @@ class BattleEntity(Entity):
         
         base_roll = Weapon.atk_roll(weapon)  # Base roll
         for c, stat in enumerate(weapon.attr_use):
-            given_stat = entity.attr_values[stat.upper()]
+            given_stat = entity.attributes[stat.upper()]
 
             multiplier = given_stat/weapon.attr_req[c]  # Calculates how much of the requirement the entity has
             if multiplier < 0.5:  # Caps the minimum at .5, collapsing it to 0 below that 0
@@ -212,7 +221,7 @@ if __name__ == '__main__':
         .set_attr_mod('Vit', 1.5)
     
     breathing = Aspect() \
-        .set_attr_mod('Vit', 5.0)
+        .set_attr_mod('Vit', 8.0)
 
     living = Aspect.compose(metabolizing, breathing)
 
@@ -237,7 +246,3 @@ if __name__ == '__main__':
     print(f_dave.hp, f_dave.mp)
 
     print(Entity.clash_stats({dave: 'Vit', joe: 'Arc'}))
-
-    print(f_dave.attr_mods)
-    print(f_joe.attr_mods)
-

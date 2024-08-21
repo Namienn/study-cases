@@ -17,3 +17,7 @@ class Fetcher():
         
         self.flags = args
         return self
+    
+    @staticmethod
+    def fetch_attribute(Entity, attribute):
+        pass
