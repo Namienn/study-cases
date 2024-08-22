@@ -1,7 +1,7 @@
-from hmac import new
 from Aspect_Class import Aspect
 from Die_Class import Die
 from Weapon_Class import Weapon
+from Ability_Class import Ability
 import Global_Config as gl
 from math import log10
 
@@ -77,6 +77,9 @@ class Entity():
 
         return self
 
+    def return_data(self):
+        return self.attributes, self.attr_dice, self.aspect
+
     @staticmethod
     def roll_stat(entity, attribute: str, scale: float = 0.1) -> int:
         """Class method for rolling a given stat for a given entity,
@@ -132,6 +135,12 @@ class Entity():
             rolls[max_index] = -1  # Step 4
         
         return win_order[:-1], win_values[:-1]
+    
+    @staticmethod
+    def engage_ability(entity, ability: Ability) -> None:
+        entity_data = entity.return_data()
+        
+        ability.engage(entity_data)
         
 
 class BattleEntity(Entity):
