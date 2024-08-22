@@ -83,6 +83,7 @@ def check_for_dmg_type(element: str, message: str = 'Parameter is not a valid da
 
     return check_in_config(element, damage_types, message)
 
+
 # Complex Methods
 
 def union_list(iter_1: list|tuple, iter_2: list|tuple) -> list:
@@ -96,3 +97,6 @@ def union_list(iter_1: list|tuple, iter_2: list|tuple) -> list:
             union_list.append(el)
 
     return union_list
+
+def data_slot_form(method, parameters: tuple):
+    return lambda data: method(data, *parameters)

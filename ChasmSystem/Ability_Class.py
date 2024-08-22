@@ -1,9 +1,9 @@
 import Global_Config as gl
 
 class Ability():
-    def __init__(self, *args) -> None:
-        self.parameters: tuple = Fetcher() \
-            .set_flags(*args) \
+    def __init__(self, **kwargs: tuple) -> None:
+        self.parameters: dict = Fetcher() \
+            .set_flags(**kwargs) \
             .return_reqs()
     
     def engage(self, ent_data: tuple):
@@ -12,23 +12,23 @@ class Ability():
 
 class Fetcher():
     def __init__(self) -> None:
-        self.flags: tuple[str, ...]
+        self.flags: dict[str, tuple]
     
-    def set_flags(self, *args: str):
+    def set_flags(self, **kwargs: tuple):
         "Builder method for flags"
 
-        for arg in args:
-            self.check_for_parameter_flag(arg)
+        for arg in kwargs.items():
+            self.check_for_parameter_flag(arg[0])
         
-        self.flags = args
+        self.flags = kwargs
         return self
     
-    def return_reqs(self) -> tuple:
-        requirements = []
-        for flag in self.flags:
-            requirements.append(self.parameter_flags[flag.upper()])
+    def return_reqs(self) -> dict:
+        requirements = {}
+        for flag in self.flags.items():
+            requirements[flag[0]] = (self.parameter_flags[flag[0]](flag[1]))
         
-        return tuple(requirements)
+        return requirements
     
     # Fetch Configuration Methods
 
@@ -51,10 +51,10 @@ class Fetcher():
         gl.check_in_config(element, cls.parameter_flags.keys(), message)    
 
     parameter_flags = {
-            'FETCH_STATS': lambda data, *args: Fetcher.fetch_attribute(data, *args)
+            'FETCH_STATS': lambda args: gl.data_slot_form(Fetcher.fetch_attribute, args)
             }
 
 
 if __name__ == '__main__':
-    walking = Ability('FETCH_STATS')
-    print(walking.parameters[0]({'VIT': 10}, 'Vit'))
+    walking = Ability(FETCH_STATS=('Vit', 'Str'))
+    print(walking.parameters['FETCH_STATS']({'VIT': 10, 'STR': 15}))
