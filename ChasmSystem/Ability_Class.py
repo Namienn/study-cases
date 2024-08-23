@@ -1,15 +1,32 @@
+from Die_Class import Die
 import Global_Config as gl
 
 class Ability():
     def __init__(self, **kwargs: tuple) -> None:
-        self.parameters: dict = Fetcher() \
-            .set_flags(**kwargs) \
-            .return_reqs()
-        
-        self.process: None = Executor() \
-            .set_flags(**kwargs) \
-            .return_proc()
+        self.fetch_args: dict[str, tuple] = kwargs
+        self.fetcher: Fetcher = Fetcher()
+        self.commands: dict[str, tuple] = {}
+        self.executor: Executor = Executor()
     
+    @property
+    def parameters(self) -> dict:
+        parameters: dict = self.fetcher \
+            .set_flags(**self.fetch_args) \
+            .return_reqs()
+        return parameters
+    
+    @property
+    def process(self):
+        process: tuple = Executor() \
+            .set_commands(**self.commands) \
+            .return_proc()
+        
+        return process
+    
+    def add_command(self, flag: str, instructions: tuple):
+        command = f'{flag.upper()}/{len(self.commands)}'
+        self.commands[command] = instructions
+
     def engage(self, ent_data: tuple):
         pass
 
@@ -21,10 +38,13 @@ class Fetcher():
     def set_flags(self, **kwargs: tuple):
         "Builder method for flags"
 
+        flags: dict = {}
+
         for arg in kwargs.items():
-            self.check_for_parameter_flag(arg[0])
+            if self.check_for_parameter_flag(arg[0]):
+                flags[arg[0]] = arg[1]
         
-        self.flags = kwargs
+        self.flags = flags
         return self
     
     def return_reqs(self) -> dict:
@@ -49,10 +69,15 @@ class Fetcher():
     # Fetch Parameter Flags
 
     @classmethod
-    def check_for_parameter_flag(cls, element: str, message: str = 'Parameter is not a valid flag') -> None:
+    def check_for_parameter_flag(cls, element: str, message: str = 'Parameter is not a valid flag') -> bool:
         "Function to confirm if a given string qualifies as a parameter flag"
 
-        gl.check_in_config(element, cls.parameter_flags.keys(), message)    
+        try:
+            gl.check_in_config(element, cls.parameter_flags.keys(), message)
+        except ValueError:
+            return False
+        else:
+            return True
 
     parameter_flags = {
             'FETCH_STATS': lambda args: gl.data_slot_form(Fetcher.fetch_attribute, args)
@@ -61,57 +86,88 @@ class Fetcher():
 
 class Executor():
     def __init__(self) -> None:
-        self.flags: dict[str, tuple]
+        self.commands: dict[str, tuple] = {}
 
-    def set_flags(self, **kwargs: tuple):
+    def set_commands(self, **kwargs: tuple):
         "Builder method for flags"
 
-        for arg in kwargs.items():
-            self.check_for_parameter_flag(arg[0])
+        commands: dict = {}
+
+        for c, arg in enumerate(kwargs.items()):
+            flag = arg[0].split('/')[0]
+            if self.check_for_parameter_flag(flag.upper()):
+                commands[arg[0]] = arg[1]
         
-        self.flags = kwargs
+        self.commands = commands
         return self
     
-    def return_proc(self) -> None:
-        pass
+    def return_proc(self) -> tuple:
+        process = []
+        for command in self.commands.items():
+            flag = command[0].split('/')[0]
+            process.append(self.parameter_flags[flag.upper()](command[1]))
+        
+        return tuple(process)
 
     @staticmethod
-    def compose_variables(base_list: list, in_1: int, in_2: int, delete_second_element: bool = False):
-        gl.check_for_type(base_list[in_1], int, message='list element indexed is the wrong type')
-        gl.check_for_type(base_list[in_2], int, message='list element indexed is the wrong type')
+    def compose_variables(base_list: list, index_1: int, index_2: int, delete_second_element: bool = False) -> None:
+        gl.check_for_type(base_list[index_1], int, message='list element indexed is the wrong type')
+        gl.check_for_type(base_list[index_2], int, message='list element indexed is the wrong type')
 
-        base_list[in_1] = base_list[in_1] * base_list[in_2]
+        base_list[index_1] = base_list[index_1] * base_list[index_2]
         if delete_second_element:
-            base_list[in_2] = None
+            base_list[index_2] = None
+    
+    @staticmethod
+    def roll_die(base_list: list, index_1: int) -> None:
+        gl.check_for_type(base_list[index_1], Die, message='list element indexed is the wrong type')
+
+        given_die: Die = base_list[index_1]
+
+        base_list[index_1] = Die.roll(given_die)
 
     # Execute Parameter Flags
     
     @classmethod
-    def check_for_parameter_flag(cls, element: str, message: str = 'Parameter is not a valid flag') -> None:
+    def check_for_parameter_flag(cls, element: str, message: str = 'Parameter is not a valid flag') -> bool:
         "Function to confirm if a given string qualifies as a parameter flag"
 
-        gl.check_in_config(element, cls.parameter_flags.keys(), message)    
+        try:
+            gl.check_in_config(element, cls.parameter_flags.keys(), message)
+        except ValueError:
+            return False
+        else:
+            return True
 
     parameter_flags = {
-            'FETCH_STATS': None
+            'ROLL_DIE': lambda args: gl.data_slot_form(Executor.roll_die, args),
+            'COMPOSE': lambda args: gl.data_slot_form(Executor.compose_variables, args)
             }
     
 
 if __name__ == '__main__':
-    walking = Ability(FETCH_STATS=('Vit', 'Str'))
-    print(walking.parameters['FETCH_STATS']({'VIT': 10, 'STR': 15}))
+    walking = Ability(FETCH_STATS=('Vit', 'Vit', 'Str'), COMPOSE=(1, 2))
+    fetched_parameters = walking.parameters['FETCH_STATS']({'VIT': 10, 'STR': 15})
+    print(fetched_parameters)
 
-    test_list = ['5', 2]
-    Executor.compose_variables(test_list, 0, 1)
+    d4 = Die().set_num_sides(4)
+    test_list = [5, d4]
+    die_roll = Executor.parameter_flags['ROLL_DIE'](tuple([1]))
+    die_roll(test_list)
     print(test_list)
-    Executor.compose_variables(test_list, 0, 1)
-    print(test_list)
-    Executor.compose_variables(test_list, 0, 1)
-    print(test_list)
+
+    walking.add_command('Compose', (1, 2))
+    walking.add_command('Compose', (0, 2))
+    process = walking.process
+
+    par_list = list(fetched_parameters)
+    for step in process:
+        step(par_list)
+    print(par_list)
 
     # Where i've stopped: Setting how parameters will be given to methods
 
     # What i must do next:
-    # - Experiment and define how different steps chain with each other
-    # - Figure out how to export the whole process from the Executor class
-    # - Ensure the data structure reliability of the Fetcher output
+    # [x] - Experiment and define how different steps chain with each other
+    # [x] - Figure out how to export the whole process from the Executor class
+    # [ ] - Ensure the data structure reliability of the Fetcher output
