@@ -5,6 +5,7 @@ class Ability():
     def __init__(self, **kwargs: tuple) -> None:
         self.fetch_args: dict[str, tuple] = kwargs
         self.fetcher: Fetcher = Fetcher()
+
         self.commands: dict[str, tuple] = {}
         self.executor: Executor = Executor()
     
@@ -13,6 +14,7 @@ class Ability():
         parameters: dict = self.fetcher \
             .set_flags(**self.fetch_args) \
             .return_reqs()
+        
         return parameters
     
     @property
@@ -28,7 +30,18 @@ class Ability():
         self.commands[command] = instructions
 
     def engage(self, ent_data: tuple):
-        pass
+
+        # Data Fetching Process
+        fetch_list = []
+        for req in self.parameters.values():
+            retrieved_data = req(ent_data)
+            fetch_list.extend(retrieved_data)
+
+        # Automatic Execution Process
+        for step in self.process:
+           step(fetch_list)
+        return(fetch_list)
+
 
 
 class Fetcher():
@@ -57,7 +70,8 @@ class Fetcher():
     # Fetch Configuration Methods
 
     @staticmethod
-    def fetch_attribute(attr_dict: dict[str, int], *args: str) -> tuple:
+    def fetch_attribute(info: tuple, *args: str) -> tuple:
+        attr_dict: dict[str, int] = info[0]
         req_attrs = []
         for arg in args:
             gl.check_for_attribute(arg)
@@ -65,6 +79,13 @@ class Fetcher():
             req_attrs.append(attr_dict[arg.upper()])
         
         return tuple(req_attrs)
+    
+    @staticmethod
+    def add_numbers(info: tuple, *args: int):
+        for arg in args:
+            gl.check_for_type(arg, int)
+
+        return args
 
     # Fetch Parameter Flags
 
@@ -80,7 +101,8 @@ class Fetcher():
             return True
 
     parameter_flags = {
-            'FETCH_STATS': lambda args: gl.data_slot_form(Fetcher.fetch_attribute, args)
+            'FETCH_STATS': lambda args: gl.data_slot_form(Fetcher.fetch_attribute, args),
+            'ADD_NUMBERS': lambda args: gl.data_slot_form(Fetcher.add_numbers, args)
             }
 
 
@@ -146,9 +168,8 @@ class Executor():
     
 
 if __name__ == '__main__':
-    walking = Ability(FETCH_STATS=('Vit', 'Vit', 'Str'), COMPOSE=(1, 2))
-    fetched_parameters = walking.parameters['FETCH_STATS']({'VIT': 10, 'STR': 15})
-    print(fetched_parameters)
+    from Entity_Class import Entity
+    walking = Ability(FETCH_STATS=('Vit', 'Str', 'Str'), ADD_NUMBERS=(2, 5))
 
     d4 = Die().set_num_sides(4)
     test_list = [5, d4]
@@ -160,14 +181,8 @@ if __name__ == '__main__':
     walking.add_command('Compose', (0, 2))
     process = walking.process
 
-    par_list = list(fetched_parameters)
-    for step in process:
-        step(par_list)
-    print(par_list)
-
-    # Where i've stopped: Setting how parameters will be given to methods
-
-    # What i must do next:
-    # [x] - Experiment and define how different steps chain with each other
-    # [x] - Figure out how to export the whole process from the Executor class
-    # [ ] - Ensure the data structure reliability of the Fetcher output
+    entity = Entity() \
+        .set_attribute('Vit', 10) \
+        .set_attribute('Str', 15)
+    
+    print(walking.engage(entity.return_data()))
