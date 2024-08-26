@@ -57,26 +57,31 @@ def build_attr_modifier_dict() -> dict:
 
 def check_for_type(element, type_check, message: str = 'Parameter type invalid') -> None:
     "Function to confirm if a given element is of a specified type"
+
     if type(element) is not type_check:
         raise TypeError(message + f' - {type(element)} != {type_check}')
 
+def check_in_config(element: str, config_check, message: str = 'Parameter given does not fit the required standard') -> None:
+    "Abstract Function to handle standardizes variables."
+
+    check_for_type(element, str)
+    if element.upper() not in config_check:
+        raise ValueError(message)
+
 def check_for_attribute(element: str, message: str = 'Parameter is not a valid attribute') -> None:
     "Function to confirm if a given string qualifies as an attribute"
-    check_for_type(element, str)
-    if element.upper() not in attributes:
-        raise ValueError(message)
+    
+    return check_in_config(element, attributes, message)
 
 def check_for_element(element: str, message: str = 'Parameter is not a valid element') -> None:
     "Function to confirm if a given string qualifies as an element"
-    check_for_type(element, str)
-    if element.upper() not in elements:
-        raise ValueError(message)
+    
+    return check_in_config(element, elements, message)
 
 def check_for_dmg_type(element: str, message: str = 'Parameter is not a valid damage type') -> None:
     "Function to confirm if a given string qualifies as a damage type"
-    check_for_type(element, str)
-    if element.upper() not in damage_types:
-        raise ValueError(message)
+
+    return check_in_config(element, damage_types, message)
 
 
 # Complex Methods
@@ -92,3 +97,6 @@ def union_list(iter_1: list|tuple, iter_2: list|tuple) -> list:
             union_list.append(el)
 
     return union_list
+
+def data_slot_form(method, parameters: tuple):
+    return lambda data: method(data, *parameters)

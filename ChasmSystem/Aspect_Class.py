@@ -1,5 +1,4 @@
-from shutil import ExecError
-from Die_Class import Die
+from Ability_Class import Ability
 import Global_Config as gl
 
 class Aspect():
@@ -21,9 +20,9 @@ class Aspect():
         self.dmg_type_mods = gl.build_dmg_type_modifier_dict()
 
         self.composition: tuple[Aspect]|tuple = tuple([self])
-        self.attached_abilities = None
+        self.attached_abilities: list = []
     
-    def set_attr_mod(self, attribute, value: float):
+    def set_attr_mod(self, attribute: str, value: float):
         "Builder Pattern for attr_mods"
 
         gl.check_for_attribute(attribute)  # Error Handling
@@ -33,26 +32,31 @@ class Aspect():
         self.attr_mods[attribute.upper()] = value
         return self
     
-    def set_elem_mod(self, attribute, value: float):
+    def set_elem_mod(self, element: str, value: float):
 
-        gl.check_for_element(attribute)  # Error Handling
+        gl.check_for_element(element)  # Error Handling
         gl.check_for_type(value, float)
         if value < 1: raise ValueError('Modifier must be greater than one')
         
-        self.element_mods[attribute.upper()] = value
+        self.element_mods[element.upper()] = value
         return self
     
-    def set_dmg_type_mod(self, attribute, value: float):
-
-        gl.check_for_dmg_type(attribute)  # Error Handling
+    def set_dmg_type_mod(self, dmg_type: str, value: float):
+        gl.check_for_dmg_type(dmg_type)  # Error Handling
         gl.check_for_type(value, float)
         if value < 1: raise ValueError('Modifier must be greater than one')
         
-        self.dmg_type_mods[attribute.upper()] = value
+        self.dmg_type_mods[dmg_type.upper()] = value
         return self
     
+    def set_ability(self, ability: Ability):
+        gl.check_for_type(ability, Ability)
+        
+        self.attached_abilities.append(ability)
+        return self
+
     def init_aspect(self):
-        "Feature method for defining composite Aspect properties"
+        "Feature method for kickstarting composite Aspect properties"
 
         if len(self.composition) == 1:  # If the called aspect isn't composite, it shouldn't change
             return self
@@ -80,6 +84,14 @@ class Aspect():
             for aspect in self.composition:
                 self.dmg_type_mods[dmg_type] *= aspect.dmg_type_mods[dmg_type]
         
+        # Redefining Attached Abilities
+        
+        self.attached_abilities = []
+
+        # Composing Attribute Modifiers
+        for aspect in self.composition:
+            self.attached_abilities = gl.union_list(self.attached_abilities, aspect.attached_abilities)
+
         return self
 
     @classmethod
