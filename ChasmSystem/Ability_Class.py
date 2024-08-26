@@ -29,6 +29,8 @@ class Ability():
         command = f'{flag.upper()}/{len(self.commands)}'
         self.commands[command] = instructions
 
+        return self
+
     def engage(self, ent_data: tuple):
 
         # Data Fetching Process
@@ -39,7 +41,9 @@ class Ability():
 
         # Automatic Execution Process
         for step in self.process:
-           step(fetch_list)
+            step(fetch_list)
+            for _ in range(fetch_list.count(None)):
+                fetch_list.remove(None)
         return(fetch_list)
 
 

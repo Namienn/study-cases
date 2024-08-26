@@ -61,8 +61,8 @@ def check_for_type(element, type_check, message: str = 'Parameter type invalid')
     if type(element) is not type_check:
         raise TypeError(message + f' - {type(element)} != {type_check}')
 
-def check_in_config(element, config_check, message: str = 'Parameter given does not fit the required standard') -> None:
-    "Abstract Function to handle standardizes variables"
+def check_in_config(element: str, config_check, message: str = 'Parameter given does not fit the required standard') -> None:
+    "Abstract Function to handle standardizes variables."
 
     check_for_type(element, str)
     if element.upper() not in config_check:

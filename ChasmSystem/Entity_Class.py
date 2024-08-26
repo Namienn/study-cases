@@ -14,7 +14,7 @@ class Entity():
          - id_name
          - attributes
          - attr_dice
-         - aspects
+         - aspect
          
          Current methods include:
          - roll_stat: rolls for stat and handles the math, returning the power level
@@ -35,9 +35,15 @@ class Entity():
 
         attr_dict = {}
         for attr in gl.attributes:
-            attr_dict[attr] = self._attr_values[attr] * self._attr_mods[attr]
+            attr_dict[attr] = int(self._attr_values[attr] * self._attr_mods[attr])
         
         return attr_dict
+    
+    @property
+    def abilities(self):
+        "Property method for fetching Abilities"
+
+        return self.aspect.attached_abilities
 
     def set_attribute(self, attribute: str, value: int):
         """Builder pattern for attr_values.
@@ -137,10 +143,13 @@ class Entity():
         return win_order[:-1], win_values[:-1]
     
     @staticmethod
-    def engage_ability(entity, ability: Ability) -> None:
+    def engage_ability(entity, ability: Ability):
+        if ability not in entity.abilities:
+            raise IndexError("Entity does not posess given ability")
+        
         entity_data = entity.return_data()
         
-        ability.engage(entity_data)
+        return ability.engage(entity_data)
         
 
 class BattleEntity(Entity):
@@ -226,8 +235,13 @@ class BattleEntity(Entity):
 
 
 if __name__ == '__main__':
+    walking = Ability(FETCH_STATS=('Vit', 'Pat'), ADD_NUMBERS=(2, 5)) \
+        .add_command('Compose', (1, 2, True)) \
+        .add_command('Compose', (0, 2, True))
+    
     metabolizing = Aspect() \
-        .set_attr_mod('Vit', 1.5)
+        .set_attr_mod('Vit', 1.5) \
+        .set_ability(walking)
     
     breathing = Aspect() \
         .set_attr_mod('Vit', 8.0)
@@ -254,4 +268,8 @@ if __name__ == '__main__':
     BattleEntity.start_up(f_dave)
     print(f_dave.hp, f_dave.mp)
 
+
     print(Entity.clash_stats({dave: 'Vit', joe: 'Arc'}))
+    print(Entity.engage_ability(dave, walking))
+
+
