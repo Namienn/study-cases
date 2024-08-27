@@ -15,10 +15,12 @@ class Entity():
          - attributes
          - attr_dice
          - aspect
+         - abilities
          
          Current methods include:
          - roll_stat: rolls for stat and handles the math, returning the power level
-         - battle_stats: returns a tuple with the entity's conflict stats
+         - clash_stats: rolls for stats in multiple entities and handles the math, returning the power level
+         - roll
          """
         self.id_name = ''
 
@@ -84,11 +86,13 @@ class Entity():
         return self
 
     def return_data(self):
+        "Method for exporting an entity's data"
+
         return self.attributes, self.attr_dice, self.aspect
 
     @staticmethod
     def roll_stat(entity, attribute: str, scale: float = 0.1) -> int:
-        """Class method for rolling a given stat for a given entity,
+        """staticmethod for rolling a given stat for a given entity,
         according to it's corresponding die (defaults to d20). """
 
         gl.check_for_attribute(attribute)
@@ -103,7 +107,7 @@ class Entity():
     
     @staticmethod
     def clash_stats(b_entities: dict) -> tuple[list, list]:
-        """Class method for stat conflict settling. 
+        """staticmethod for stat conflict settling. 
         
         Receives a dict with the keys as the entities and the
         values as string with the attribute they'll roll
@@ -144,6 +148,8 @@ class Entity():
     
     @staticmethod
     def engage_ability(entity, ability: Ability):
+        "Method for calling an ability within the entity's skillset"
+
         if ability not in entity.abilities:
             raise IndexError("Entity does not posess given ability")
         

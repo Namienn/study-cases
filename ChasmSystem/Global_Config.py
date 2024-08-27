@@ -45,13 +45,13 @@ def build_dmg_type_modifier_dict() -> dict:
 
     return frame_dict
 
-
-# Battle Statuses Standardization
-
 def build_attr_modifier_dict() -> dict:
     "Constucts the Attribute Modifiers dict based on the current set of attributes"
-    return build_attr_values_dict()
 
+    # Redundancy is allowed for readability and
+    # possible later reimplementation purposes
+
+    return build_attr_values_dict()
 
 # Common Error Handling Routines
 
@@ -70,16 +70,25 @@ def check_in_config(element: str, config_check, message: str = 'Parameter given 
 
 def check_for_attribute(element: str, message: str = 'Parameter is not a valid attribute') -> None:
     "Function to confirm if a given string qualifies as an attribute"
+
+    # Redundancy is allowed for readability and
+    # possible later reimplementation purposes
     
     return check_in_config(element, attributes, message)
 
 def check_for_element(element: str, message: str = 'Parameter is not a valid element') -> None:
     "Function to confirm if a given string qualifies as an element"
+
+    # Redundancy is allowed for readability and
+    # possible later reimplementation purposes
     
     return check_in_config(element, elements, message)
 
 def check_for_dmg_type(element: str, message: str = 'Parameter is not a valid damage type') -> None:
     "Function to confirm if a given string qualifies as a damage type"
+
+    # Redundancy is allowed for readability and
+    # possible later reimplementation purposes
 
     return check_in_config(element, damage_types, message)
 
@@ -87,6 +96,7 @@ def check_for_dmg_type(element: str, message: str = 'Parameter is not a valid da
 # Complex Methods
 
 def union_list(iter_1: list|tuple, iter_2: list|tuple) -> list:
+    "Funtion to ease the finding and removal of repetition while joining two iterators"
     union_list = []
     el_list = []
     el_list.extend (iter_1)
@@ -99,4 +109,5 @@ def union_list(iter_1: list|tuple, iter_2: list|tuple) -> list:
     return union_list
 
 def data_slot_form(method, parameters: tuple):
+    "Function to create single input methods out of complex ones based on given parameters"
     return lambda data: method(data, *parameters)

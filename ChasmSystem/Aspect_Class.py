@@ -9,6 +9,7 @@ class Aspect():
         - attr_mods
         - element_mods
         - dmg_type_mods
+        - attached_abilities
         
         Current methods include:
         - compose: joins the abilities and composes the modifiers of two Aspects
@@ -19,7 +20,7 @@ class Aspect():
         self.element_mods = gl.build_element_modifier_dict()
         self.dmg_type_mods = gl.build_dmg_type_modifier_dict()
 
-        self.composition: tuple[Aspect]|tuple = tuple([self])
+        self._composition: tuple[Aspect]|tuple = tuple([self])
         self.attached_abilities: list = []
     
     def set_attr_mod(self, attribute: str, value: float):
@@ -50,6 +51,8 @@ class Aspect():
         return self
     
     def set_ability(self, ability: Ability):
+        "Builder method for attached_abilities"
+
         gl.check_for_type(ability, Ability)
         
         self.attached_abilities.append(ability)
@@ -58,7 +61,7 @@ class Aspect():
     def init_aspect(self):
         "Feature method for kickstarting composite Aspect properties"
 
-        if len(self.composition) == 1:  # If the called aspect isn't composite, it shouldn't change
+        if len(self._composition) == 1:  # If the called aspect isn't composite, it shouldn't change
             return self
 
         # Redefining Modifiers
@@ -71,17 +74,17 @@ class Aspect():
 
         for attr in gl.attributes:
             # Composing Attribute Modifiers
-            for aspect in self.composition:
+            for aspect in self._composition:
                 self.attr_mods[attr] *= aspect.attr_mods[attr]
         
         for elem in gl.elements:
             # Composing Element Modifiers
-            for aspect in self.composition:
+            for aspect in self._composition:
                 self.element_mods[elem] *= aspect.element_mods[elem]
         
         for dmg_type in gl.damage_types:
             # Composing Damage Type Modifiers
-            for aspect in self.composition:
+            for aspect in self._composition:
                 self.dmg_type_mods[dmg_type] *= aspect.dmg_type_mods[dmg_type]
         
         # Redefining Attached Abilities
@@ -89,7 +92,7 @@ class Aspect():
         self.attached_abilities = []
 
         # Composing Attribute Modifiers
-        for aspect in self.composition:
+        for aspect in self._composition:
             self.attached_abilities = gl.union_list(self.attached_abilities, aspect.attached_abilities)
 
         return self
@@ -109,12 +112,12 @@ class Aspect():
         # fundamental and composite Aspects.
 
         new_comp: list[Aspect] = []
-        comp_1: tuple = aspect_1.composition
-        comp_2: tuple = aspect_2.composition
+        comp_1: tuple = aspect_1._composition
+        comp_2: tuple = aspect_2._composition
 
         new_comp = gl.union_list(comp_1, comp_2)
 
-        new_aspect.composition = tuple(new_comp)
+        new_aspect._composition = tuple(new_comp)
         
         return new_aspect
 
