@@ -2,12 +2,12 @@ name: CI
 
 on:
   push:
-  pull_request:
+  pull-request:
 
 jobs:
-  run_tests:
+  run-tests:
     strategy:
-      fail_fast: false
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version:
