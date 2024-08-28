@@ -1,8 +1,8 @@
-from Aspect_Class import Aspect
-from Die_Class import Die
-from Weapon_Class import Weapon
-from Ability_Class import Ability
-import Global_Config as gl
+from .Aspect_Class import Aspect
+from .Die_Class import Die
+from .Weapon_Class import Weapon
+from .Ability_Class import Ability
+from . import Global_Config as gl
 from math import log10
 
 class Entity():

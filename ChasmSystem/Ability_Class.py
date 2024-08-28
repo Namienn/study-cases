@@ -1,6 +1,6 @@
-import Global_Config as gl
-import Fetcher_Functions as ff
-import Executor_Functions as ef
+from . import Global_Config as gl
+from . import Fetcher_Functions as ff
+from . import Executor_Functions as ef
 
 class Ability():
     def __init__(self, **kwargs: tuple) -> None:

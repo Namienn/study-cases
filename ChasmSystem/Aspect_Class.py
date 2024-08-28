@@ -1,5 +1,5 @@
-from Ability_Class import Ability
-import Global_Config as gl
+from .Ability_Class import Ability
+from . import Global_Config as gl
 
 class Aspect():
     def __init__(self) -> None:

@@ -1,5 +1,5 @@
-from Die_Class import Die
-import Global_Config as gl
+from .Die_Class import Die
+from . import Global_Config as gl
 
 # This file contains the functions utilized by the
 # Fetcher class owned by an Ability object.
