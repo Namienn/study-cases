@@ -1,7 +1,13 @@
 import pytest
 
+
+from pathlib import Path
+this_directory = Path(__file__).parent.parent
+
+print(this_directory)
+
 import sys
-sys.path.append('/home/thomas/Documents/VSCode Paste/study_cases')
+sys.path.append(str(this_directory))
 
 from ChasmSystem import Die
 
