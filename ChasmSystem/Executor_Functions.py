@@ -20,8 +20,8 @@ def compose_variables(base_list: list, index_1: int, index_2: int, delete_second
 
 def roll_die(base_list: list, index_1: int) -> None:
     "Function for rolling a die, redefining it into a number."
-    gl.check_for_type(base_list[index_1], Die, message='list element indexed is the wrong type')
 
+    gl.check_for_type(base_list[index_1], Die, message='list element indexed is the wrong type')
     given_die: Die = base_list[index_1]
 
     base_list[index_1] = Die.roll(given_die)

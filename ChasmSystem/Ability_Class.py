@@ -33,7 +33,7 @@ class Ability():
         return parameters
     
     @property
-    def process(self):
+    def process(self) -> tuple:
         "Property method for generating the ability's execution procedure"
 
         process: tuple = Executor() \
@@ -141,7 +141,7 @@ class Executor():
 
         commands: dict = {}
 
-        for c, arg in enumerate(kwargs.items()):
+        for arg in kwargs.items():
             flag = arg[0].split('/')[0]
             if self.check_for_parameter_flag(flag.upper()):
                 commands[arg[0]] = arg[1]
@@ -175,26 +175,3 @@ class Executor():
             'ROLL_DIE': lambda args: gl.data_slot_form(ef.roll_die, args),
             'COMPOSE': lambda args: gl.data_slot_form(ef.compose_variables, args)
             }
-    
-
-if __name__ == '__main__':
-    from Entity_Class import Entity
-    from Die_Class import Die
-
-    walking = Ability(FETCH_STATS=('Vit', 'Str', 'Str'), ADD_NUMBERS=(2, 5))
-
-    d4 = Die().set_num_sides(4)
-    test_list = [5, d4]
-    die_roll = Executor.parameter_flags['ROLL_DIE'](tuple([1]))
-    die_roll(test_list)
-    print(test_list)
-
-    walking.add_command('Compose', (1, 2))
-    walking.add_command('Compose', (0, 2))
-    process = walking.process
-
-    entity = Entity() \
-        .set_attribute('Vit', 10) \
-        .set_attribute('Str', 15)
-    
-    print(walking.engage(entity.return_data()))
