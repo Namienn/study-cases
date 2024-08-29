@@ -3,8 +3,6 @@ import pytest
 from pathlib import Path
 this_directory = Path(__file__).parent.parent
 
-print(this_directory)
-
 import sys
 sys.path.append(str(this_directory))
 
@@ -79,12 +77,4 @@ def test_executor_flag_call():
 test_list = [5, d4]
 die_roll = Executor.parameter_flags['ROLL_DIE'](tuple([1]))
 die_roll(test_list)
-print(test_list)
-
-walking.add_command('Compose', (1, 2))
-walking.add_command('Compose', (0, 2))
-process = walking.process
-
-entity = Entity()
-
-print(walking.engage(entity.return_data()))'''
+print(test_list)'''
