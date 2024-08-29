@@ -25,7 +25,7 @@ class Die():
         
         gl.check_for_type(num, int)  # Error Handling
         if num < 1:
-            raise TypeError("die num_sides must be a strictly positive integer")
+            raise ValueError("die num_sides must be a strictly positive integer")
         
         self.num_sides = num
         return self
@@ -43,7 +43,7 @@ class Die():
         
         gl.check_for_type(num, int)  # Error Handling
         if num < 1:
-            raise TypeError("die scalar must be a strictly positive integer")
+            raise ValueError("die scalar must be a strictly positive integer")
         
         self.scalar = num
         return self
