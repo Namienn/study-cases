@@ -62,19 +62,19 @@ def test_engage(entity: Entity, ability: Ability):
     assert ability.engage(ent_data) == [20, 20]
 
 def test_fetcher_flag_call():
-    "Testing for individual calling of each flag in fetcher class"
+    "Testing for individual calling of each flag in Fetcher class"
 
     for flag in Fetcher.parameter_flags.keys():
         assert callable(Fetcher.parameter_flags[flag]) is True
 
 def test_executor_flag_call():
-    "Testing for individual calling of each flag in executor class"
+    "Testing for individual calling of each flag in Executor class"
 
     for flag in Executor.parameter_flags.keys():
         assert callable(Executor.parameter_flags[flag]) is True
 
-'''d4 = Die().set_num_sides(4)
-test_list = [5, d4]
-die_roll = Executor.parameter_flags['ROLL_DIE'](tuple([1]))
-die_roll(test_list)
-print(test_list)'''
+def test_invalid_flag_call():
+    "Testing for invalid flag calls within Fetcher and Executor class"
+
+    assert Fetcher.check_for_parameter_flag('Banans') is False
+    assert Executor.check_for_parameter_flag('Banans') is False
