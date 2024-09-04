@@ -111,3 +111,13 @@ def union_list(iter_1: list|tuple, iter_2: list|tuple) -> list:
 def data_slot_form(method, parameters: tuple):
     "Function to create single input methods out of complex ones based on given parameters"
     return lambda data: method(data, *parameters)
+
+def dict_from_double_iter(keys_iter: list|tuple, values_iter: list|tuple) -> dict:
+    "Function to create a dict based off of the values of two iterable elements"
+    if len(keys_iter) != len(values_iter): raise KeyError('Given keys and values iters do not match lengths')
+
+    return_dict = dict()
+    for c in range(len(keys_iter)):
+        return_dict[keys_iter[c]] = values_iter[c]
+    
+    return return_dict

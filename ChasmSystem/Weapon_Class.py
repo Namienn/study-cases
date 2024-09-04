@@ -20,12 +20,20 @@ class Weapon():
 
         self.dmg_type = None
     
+    @property
+    def attributes(self) -> dict:
+        return gl.dict_from_double_iter(self.attr_use, self.attr_req)
+
     def set_attr_use(self, *args: str):
         "Builder pattern for weapon attributes"
+
+        attr_list: list[str] = list()
         for arg in args:
-            gl.check_for_attribute(arg)
+            attr = arg.upper()
+            gl.check_for_attribute(attr)
+            if attr not in attr_list: attr_list.append(attr)  # Duplication Prevention
         
-        self.attr_use = args
+        self.attr_use = tuple(attr_list)
         return self
     
     def set_attr_req(self, *args: int):
@@ -54,8 +62,8 @@ class Weapon():
         self.dmg_type = given_type
         return self
 
-    @classmethod
-    def atk_roll(cls, weapon) -> int:
+    @staticmethod
+    def atk_roll(weapon) -> int:
         "Class method for rolling attack dice."
 
         gl.check_for_type(weapon, Weapon)
@@ -64,14 +72,3 @@ class Weapon():
         for die in weapon.dmg_dice:
             result += Die.roll(die)
         return result
-
-
-if __name__ == "__main__":
-    d4 = Die() \
-        .set_num_sides(4)
-    
-    stick = Weapon() \
-        .set_attr_use('Str', 'Vit') \
-        .set_dmg_dice(d4, d4, d4, d4)
-    
-    print(Weapon.atk_roll(stick))
