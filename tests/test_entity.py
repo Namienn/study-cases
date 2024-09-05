@@ -1,4 +1,3 @@
-from email.mime import base
 import pytest
 
 from pathlib import Path
