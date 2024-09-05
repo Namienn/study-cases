@@ -1,5 +1,5 @@
-from Die_Class import Die
-import Global_Config as gl
+from .Die_Class import Die
+from . import Global_Config as gl
 
 # This file contains the functions utilized by the
 # Fetcher class owned by an Ability object.
@@ -20,8 +20,8 @@ def compose_variables(base_list: list, index_1: int, index_2: int, delete_second
 
 def roll_die(base_list: list, index_1: int) -> None:
     "Function for rolling a die, redefining it into a number."
-    gl.check_for_type(base_list[index_1], Die, message='list element indexed is the wrong type')
 
+    gl.check_for_type(base_list[index_1], Die, message='list element indexed is the wrong type')
     given_die: Die = base_list[index_1]
 
     base_list[index_1] = Die.roll(given_die)

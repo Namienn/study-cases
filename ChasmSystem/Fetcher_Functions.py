@@ -1,4 +1,4 @@
-import Global_Config as gl
+from . import Global_Config as gl
 
 # This file contains the functions utilized by the
 # Fetcher class owned by an Ability object.
