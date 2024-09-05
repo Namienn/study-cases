@@ -113,27 +113,3 @@ def test_engage_ability(ability):
 def test_invalid_ability(entity, ability):
     with pytest.raises(IndexError):
         Entity.engage_ability(entity, ability)
-
-
-'''
-    f_dave = BattleEntity.from_entity(dave)
-
-    joe = Entity() \
-        .set_attribute('Vit', 90) \
-        .set_attribute('Pat', 120) \
-        .set_attribute('Arc', 640) \
-        .set_attribute('Int', 440) \
-        .add_aspects(metabolizing, breathing)
-    f_joe = BattleEntity.from_entity(joe)
-
-    print(f_dave.hp, f_dave.mp)
-    BattleEntity.start_up(f_dave)
-    print(f_dave.hp, f_dave.mp)
-
-
-    print(Entity.clash_stats({dave: 'Vit', joe: 'Arc'}))
-    print(Entity.engage_ability(dave, walking))
-
-
-'''
-

@@ -30,29 +30,3 @@ class GameMaster():
         for ent in self.active_entities.values():
             BattleEntity.start_up(ent)
 
-
-if __name__ == '__main__':
-    from Weapon_Class import Weapon
-    from Die_Class import Die
-
-    d4 = Die().set_num_sides(4)
-
-    dave = Entity() \
-        .set_attribute('Vit', 350) \
-        .set_attribute('Pat', 220) \
-        .set_attribute('Arc', 130) \
-        .set_attribute('Int', 330) \
-        .set_name('dave')
-    
-    wand = Weapon() \
-        .set_attr_use('Int', 'Pat') \
-        .set_attr_req(100, 100) \
-        .set_dmg_dice(d4, d4, d4)
-
-    game = GameMaster().add_entities(dave)
-    
-    print(game.active_entities['dave'].hp, end=' ')
-    game.start_engagement()
-    print(game.active_entities['dave'].hp)
-
-    print(BattleEntity.roll_damage(game.active_entities['dave'], wand))
