@@ -72,9 +72,14 @@ def test_ability_init(ability: Ability):
     base_aspect = Aspect()
 
     assert base_aspect.set_ability(ability) is base_aspect
+    assert base_aspect.attached_abilities == [ability]
 
-def test_compose(aspect_1, aspect_2):
-    assert type(Aspect.compose(aspect_1, aspect_2)) is Aspect
+def test_compose(aspect_1, aspect_2: Aspect, ability: Ability):
+    aspect_2.set_ability(ability)
+
+    composed_aspect = Aspect.compose(aspect_1, aspect_2)
+    assert type(composed_aspect) is Aspect
+    assert composed_aspect.attached_abilities == [ability]
 
 def test_init(aspect_1, aspect_2):
     base_aspect = Aspect()

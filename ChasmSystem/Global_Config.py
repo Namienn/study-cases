@@ -53,6 +53,7 @@ def build_attr_modifier_dict() -> dict:
 
     return build_attr_values_dict()
 
+
 # Common Error Handling Routines
 
 def check_for_type(element, type_check, message: str = 'Parameter type invalid') -> None:

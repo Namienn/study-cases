@@ -125,7 +125,7 @@ class Entity():
             rolls.append(Entity.roll_stat(current_entity, roll_attribute))
         
         # Code snippet copied over from Die class
-        # Check over there for better explanation of the
+        # Check over there for explanation of the
         # base functionality
         
         win_order = []
@@ -238,44 +238,3 @@ class BattleEntity(Entity):
             base_roll *= multiplier
 
         return int(base_roll)
-
-
-if __name__ == '__main__':
-    walking = Ability(FETCH_STATS=('Vit', 'Pat'), ADD_NUMBERS=(2, 5)) \
-        .add_command('Compose', (1, 2, True)) \
-        .add_command('Compose', (0, 2, True))
-    
-    metabolizing = Aspect() \
-        .set_attr_mod('Vit', 1.5) \
-        .set_ability(walking)
-    
-    breathing = Aspect() \
-        .set_attr_mod('Vit', 8.0)
-
-    living = Aspect.compose(metabolizing, breathing)
-
-    dave = Entity() \
-        .set_attribute('Vit', 350) \
-        .set_attribute('Pat', 220) \
-        .set_attribute('Arc', 130) \
-        .set_attribute('Int', 330) \
-        .add_aspects(living)
-    f_dave = BattleEntity.from_entity(dave)
-
-    joe = Entity() \
-        .set_attribute('Vit', 90) \
-        .set_attribute('Pat', 120) \
-        .set_attribute('Arc', 640) \
-        .set_attribute('Int', 440) \
-        .add_aspects(metabolizing, breathing)
-    f_joe = BattleEntity.from_entity(joe)
-
-    print(f_dave.hp, f_dave.mp)
-    BattleEntity.start_up(f_dave)
-    print(f_dave.hp, f_dave.mp)
-
-
-    print(Entity.clash_stats({dave: 'Vit', joe: 'Arc'}))
-    print(Entity.engage_ability(dave, walking))
-
-

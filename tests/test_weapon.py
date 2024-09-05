@@ -8,7 +8,7 @@ sys.path.append(str(this_directory))
 
 from ChasmSystem import Die, Weapon
 
-@pytest.fixture
+@pytest.fixture()
 def weapon():
     d4 = Die() \
         .set_num_sides(4)

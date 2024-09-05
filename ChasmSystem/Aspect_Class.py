@@ -87,11 +87,7 @@ class Aspect():
             for aspect in self._composition:
                 self.dmg_type_mods[dmg_type] *= aspect.dmg_type_mods[dmg_type]
         
-        # Redefining Attached Abilities
-        
-        self.attached_abilities = []
-
-        # Composing Attribute Modifiers
+        # Composing Attached Abilities
         for aspect in self._composition:
             self.attached_abilities = gl.union_list(self.attached_abilities, aspect.attached_abilities)
 
@@ -119,4 +115,4 @@ class Aspect():
 
         new_aspect._composition = tuple(new_comp)
         
-        return new_aspect
+        return new_aspect.init_aspect()
