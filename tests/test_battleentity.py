@@ -1,8 +1,6 @@
 import pytest
 
 from pathlib import Path
-
-from tests.test_entity import base_ability
 this_directory = Path(__file__).parent.parent
 
 import sys
