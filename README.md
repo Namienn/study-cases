@@ -24,15 +24,13 @@ The ChasmSystem is based off of 6 data classes:
 > Every one of those follows the Builder design pattern, meaning that objects are configured through the layering of setter methods.
 >
 > Example:
-> ```
-def entity():
+> ```def entity():
     return Entity() \
         .set_attribute('Vit', 100) \
         .set_attribute('Pat', 220) \
         .set_attribute('Arc', 130) \
         .set_attribute('Int', 330) \
-        .add_aspects(base_aspect)
-```
+        .add_aspects(base_aspect)```
 
 ### The Die
 
